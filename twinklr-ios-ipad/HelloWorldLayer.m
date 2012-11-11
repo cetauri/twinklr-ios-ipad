@@ -9,7 +9,8 @@
 enum CCNodeTag {
     CCNodeTag_status = 100,
     CCNodeTag_distance,
-    CCNodeTag_count
+    CCNodeTag_count,
+    CCNodeTag_ball
 };
 
 // Import the interfaces
@@ -66,17 +67,21 @@ enum CCNodeTag {
         
         CCSprite * bg = [CCSprite spriteWithFile:@"star1.png"];
         [bg setPosition:ccp(0, 0)];
-//        [bg setScaleX:3];
-//        [bg setScaleY:5];
-        [self addChild:bg z:0];
+//        [bg setScaleY:1.2];
+//        [bg setAnchorPoint:ccp(0,0)];
+        [self addChild:bg z:-1];
         
         self.isTouchEnabled = YES;
         [CCDirector sharedDirector].openGLView.multipleTouchEnabled = true;
         
         depth = 0;
-//        initialDistance = 0;
-//        finalDistance = 0;
-//        initPointSet = finalPoint = CGPointZero;
+                
+        CCSprite *ball = [CCSprite spriteWithFile:@"earth3am.jpg"];
+        ball.position =  ccp( size.width /2 , size.height/2 + 100);
+        ball.scaleX = 0.05;
+        ball.scaleY = 0.05;
+        ball.tag = CCNodeTag_ball;
+        [self addChild:ball z:1];
 	}
 	return self;
 }
@@ -92,25 +97,28 @@ enum CCNodeTag {
 	[super dealloc];
 }
 
--(CGFloat)euclideanDistance:(NSSet*)touches{
-    NSArray *twoTouch = [touches allObjects];
-    UITouch *tOne = [twoTouch objectAtIndex:0];
-    UITouch *tTwo = [twoTouch objectAtIndex:1];
-    CGPoint firstTouch = [tOne locationInView:[tOne view]];
-    CGPoint secondTouch = [tTwo locationInView:[tTwo view]];
-//    NSLog(@"%f, %f | %f, %f", firstTouch.x, secondTouch.x, firstTouch.y, secondTouch.y);
-//    return sqrt(pow(firstTouch.x - secondTouch.x, 2.0f) + pow(firstTouch.y - secondTouch.y, 2.0f));
-    return ccpDistance(firstTouch, secondTouch);
-
-}
-
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+    
+    CCSprite *ballSprite =  (CCSprite *)[self getChildByTag:CCNodeTag_ball];
+    CGPoint point = ballSprite.position;
+    
+    CGSize size = [[CCDirector sharedDirector] winSize];
+    if(point.x != size.width/2){
+        float angle = 90;
+        if (size.width/2 < point.x ) angle *= -1;
+    
+        //animation
+        CGSize size = [[CCDirector sharedDirector] winSize];
+        CCMoveTo *move = [CCMoveTo actionWithDuration:0.3 position:CGPointMake(size.width/2, point.y)];
+        CCRotateBy *roation = [CCRotateBy actionWithDuration:0.3 angle:angle];
+        [ballSprite runAction:[CCSpawn actions:move, roation, nil]];
+    }
     initialDistance = 0;
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
     
     if ([touches count] == 1) {
 		UITouch *touch = [touches anyObject];
@@ -132,7 +140,7 @@ enum CCNodeTag {
 }
 
 - (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
 	if ([touches count] == 1) {
 		// drag methods
 		UITouch* touch = [touches anyObject];
@@ -160,11 +168,11 @@ enum CCNodeTag {
 - (void)explorer:(CGFloat)distance{
 
     CCLabelTTF *distLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_distance];
-    [distLabel setString:[NSString stringWithFormat:@"%f", distance]];
-    
-    
     CCLabelTTF *statusLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_status];
     CCLabelTTF *countLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_count];
+    CCSprite *ballSprite =  (CCSprite *)[self getChildByTag:CCNodeTag_ball];
+
+    CGPoint point = ballSprite.position;
     
     if (distance > 200) {
         [statusLabel setString:@"Zoom in"];
@@ -173,11 +181,17 @@ enum CCNodeTag {
         [statusLabel setString:@"Zoom out"];
         depth--;
     }else{
-        [statusLabel setString:nil];
+        CGSize size = [[CCDirector sharedDirector] winSize];
+
+        point.x = size.width/2 + distance*1.5;
+        ballSprite.position = point;
+        [statusLabel setString:@" "];
     }
     
+#ifdef DEBUG
     [countLabel setString:[NSString stringWithFormat:@"%i depth", depth]];
-    
+    [distLabel setString:[NSString stringWithFormat:@"%f", distance]];
+#endif
     
 }
 

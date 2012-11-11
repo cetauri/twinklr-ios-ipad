@@ -123,6 +123,7 @@
 		AFA59BFA164B5F2600DA196F /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA59BF9164B5F2600DA196F /* RootViewController.m */; };
 		AFA59BFD164B5F2600DA196F /* HelloWorldLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA59BFC164B5F2600DA196F /* HelloWorldLayer.m */; };
 		AFA59C05164B61B000DA196F /* star1.png in Resources */ = {isa = PBXBuildFile; fileRef = AFA59C04164B61B000DA196F /* star1.png */; };
+		AFD18DC1164FA80000FB0BB9 /* earth3am.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AFD18DC0164FA80000FB0BB9 /* earth3am.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -362,6 +363,7 @@
 		AFA59BFC164B5F2600DA196F /* HelloWorldLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HelloWorldLayer.m; sourceTree = "<group>"; };
 		AFA59BFE164B5F2600DA196F /* GameConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameConfig.h; sourceTree = "<group>"; };
 		AFA59C04164B61B000DA196F /* star1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = star1.png; path = ../../../Desktop/star1.png; sourceTree = "<group>"; };
+		AFD18DC0164FA80000FB0BB9 /* earth3am.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = earth3am.jpg; path = Resources/earth3am.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -435,6 +437,7 @@
 		AFA59AA4164B5F2400DA196F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				AFD18DC0164FA80000FB0BB9 /* earth3am.jpg */,
 				AFA59C04164B61B000DA196F /* star1.png */,
 				AFA59AA5164B5F2400DA196F /* Default.png */,
 				AFA59AA7164B5F2400DA196F /* fps_images.png */,
@@ -821,6 +824,7 @@
 				AFA59AB4164B5F2400DA196F /* Icon@2x.png in Resources */,
 				AFA59AB7164B5F2400DA196F /* iTunesArtwork in Resources */,
 				AFA59C05164B61B000DA196F /* star1.png in Resources */,
+				AFD18DC1164FA80000FB0BB9 /* earth3am.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
