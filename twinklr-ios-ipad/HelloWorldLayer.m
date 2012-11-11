@@ -188,10 +188,10 @@ enum CCNodeTag {
         [statusLabel setString:@" "];
     }
     
-#ifdef DEBUG
+//#ifdef DEBUG
     [countLabel setString:[NSString stringWithFormat:@"%i depth", depth]];
     [distLabel setString:[NSString stringWithFormat:@"%f", distance]];
-#endif
+//#endif
     
 }
 

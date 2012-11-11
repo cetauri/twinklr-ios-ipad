@@ -7,7 +7,7 @@
 //
 
 #import "cocos2d.h"
-
+#import "TestFlight.h"
 #import "AppDelegate.h"
 #import "GameConfig.h"
 #import "HelloWorldLayer.h"
@@ -40,6 +40,9 @@
 }
 - (void) applicationDidFinishLaunching:(UIApplication*)application
 {
+    //test flight
+    [TestFlight takeOff:@"8761de31f205c7ff4521ef96db9b33ac_MTUxOTYwMjAxMi0xMS0xMCAwMjowNDozMi42MzA5NjA"];
+    
 	// Init the window
 	window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
