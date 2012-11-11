@@ -122,6 +122,7 @@
 		AFA59BF7164B5F2600DA196F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA59BF6164B5F2600DA196F /* AppDelegate.m */; };
 		AFA59BFA164B5F2600DA196F /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA59BF9164B5F2600DA196F /* RootViewController.m */; };
 		AFA59BFD164B5F2600DA196F /* HelloWorldLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA59BFC164B5F2600DA196F /* HelloWorldLayer.m */; };
+		AFA59C05164B61B000DA196F /* star1.png in Resources */ = {isa = PBXBuildFile; fileRef = AFA59C04164B61B000DA196F /* star1.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -360,6 +361,7 @@
 		AFA59BFB164B5F2600DA196F /* HelloWorldLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelloWorldLayer.h; sourceTree = "<group>"; };
 		AFA59BFC164B5F2600DA196F /* HelloWorldLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HelloWorldLayer.m; sourceTree = "<group>"; };
 		AFA59BFE164B5F2600DA196F /* GameConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameConfig.h; sourceTree = "<group>"; };
+		AFA59C04164B61B000DA196F /* star1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = star1.png; path = ../../../Desktop/star1.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -433,6 +435,7 @@
 		AFA59AA4164B5F2400DA196F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				AFA59C04164B61B000DA196F /* star1.png */,
 				AFA59AA5164B5F2400DA196F /* Default.png */,
 				AFA59AA7164B5F2400DA196F /* fps_images.png */,
 				AFA59AA9164B5F2400DA196F /* Icon-72.png */,
@@ -817,6 +820,7 @@
 				AFA59AB2164B5F2400DA196F /* Icon.png in Resources */,
 				AFA59AB4164B5F2400DA196F /* Icon@2x.png in Resources */,
 				AFA59AB7164B5F2400DA196F /* iTunesArtwork in Resources */,
+				AFA59C05164B61B000DA196F /* star1.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -971,14 +975,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer: ohsang Kwon (8CW3JD7X34)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: ohsang Kwon (8CW3JD7X34)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "twinklr-ios-ipad/Prefix.pch";
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "twinklr-ios-ipad/Resources/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "AE30C62B-8125-43A0-AE6F-4F579FF878A1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "AE30C62B-8125-43A0-AE6F-4F579FF878A1";
 				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
 			};
@@ -988,13 +997,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer: ohsang Kwon (8CW3JD7X34)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: ohsang Kwon (8CW3JD7X34)";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "twinklr-ios-ipad/Prefix.pch";
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "twinklr-ios-ipad/Resources/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "AE30C62B-8125-43A0-AE6F-4F579FF878A1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "AE30C62B-8125-43A0-AE6F-4F579FF878A1";
 				TARGETED_DEVICE_FAMILY = 2;
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
@@ -1020,6 +1034,7 @@
 				AFA59C03164B5F2600DA196F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

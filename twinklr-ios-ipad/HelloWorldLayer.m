@@ -6,6 +6,11 @@
 //  Copyright __MyCompanyName__ 2012년. All rights reserved.
 //
 
+enum CCNodeTag {
+    CCNodeTag_status = 100,
+    CCNodeTag_distance,
+    CCNodeTag_count
+};
 
 // Import the interfaces
 #import "HelloWorldLayer.h"
@@ -36,8 +41,7 @@
 	if( (self=[super init])) {
 		
 		// create and initialize a Label
-		CCLabelTTF *label = [CCLabelTTF labelWithString:@"Hello World" fontName:@"Marker Felt" fontSize:64];
-
+		CCLabelTTF *label = [CCLabelTTF labelWithString:@"Hello Universe" fontName:@"Marker Felt" fontSize:64];
 		// ask director the the window size
 		CGSize size = [[CCDirector sharedDirector] winSize];
 	
@@ -46,6 +50,33 @@
 		
 		// add the label as a child to this Layer
 		[self addChild: label];
+        
+        
+        CCLabelTTF *countlabel = [CCLabelTTF labelWithString:@"" fontName:@"Marker Felt" fontSize:20];
+		countlabel.position =  ccp( size.width /2 , size.height/2 - 100);
+		[self addChild:countlabel z:1 tag:CCNodeTag_count];
+        
+        CCLabelTTF *statuslabel = [CCLabelTTF labelWithString:@"" fontName:@"Marker Felt" fontSize:20];
+		statuslabel.position =  ccp( size.width /2 - 200, 20);
+		[self addChild:statuslabel z:1 tag:CCNodeTag_status];
+
+        CCLabelTTF *scalelabel = [CCLabelTTF labelWithString:@"" fontName:@"Marker Felt" fontSize:20];
+		scalelabel.position =  ccp( size.width /2 + 200 , 20);
+        [self addChild:scalelabel z:1 tag:CCNodeTag_distance];
+        
+        CCSprite * bg = [CCSprite spriteWithFile:@"star1.png"];
+        [bg setPosition:ccp(0, 0)];
+//        [bg setScaleX:3];
+//        [bg setScaleY:5];
+        [self addChild:bg z:0];
+        
+        self.isTouchEnabled = YES;
+        [CCDirector sharedDirector].openGLView.multipleTouchEnabled = true;
+        
+        depth = 0;
+//        initialDistance = 0;
+//        finalDistance = 0;
+//        initPointSet = finalPoint = CGPointZero;
 	}
 	return self;
 }
@@ -60,4 +91,94 @@
 	// don't forget to call "super dealloc"
 	[super dealloc];
 }
+
+-(CGFloat)euclideanDistance:(NSSet*)touches{
+    NSArray *twoTouch = [touches allObjects];
+    UITouch *tOne = [twoTouch objectAtIndex:0];
+    UITouch *tTwo = [twoTouch objectAtIndex:1];
+    CGPoint firstTouch = [tOne locationInView:[tOne view]];
+    CGPoint secondTouch = [tTwo locationInView:[tTwo view]];
+//    NSLog(@"%f, %f | %f, %f", firstTouch.x, secondTouch.x, firstTouch.y, secondTouch.y);
+//    return sqrt(pow(firstTouch.x - secondTouch.x, 2.0f) + pow(firstTouch.y - secondTouch.y, 2.0f));
+    return ccpDistance(firstTouch, secondTouch);
+
+}
+
+- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+    initialDistance = 0;
+}
+
+- (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+    
+    if ([touches count] == 1) {
+		UITouch *touch = [touches anyObject];
+		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
+		// single touch dragging needs to go here
+        
+	} else if ([touches count] == 2) {
+		// Get points of both touches
+		NSArray *twoTouch = [touches allObjects];
+		UITouch *tOne = [twoTouch objectAtIndex:0];
+		UITouch *tTwo = [twoTouch objectAtIndex:1];
+		CGPoint firstTouch = [tOne locationInView:[tOne view]];
+		CGPoint secondTouch = [tTwo locationInView:[tTwo view]];
+        
+		// Find the distance between those two points
+		initialDistance = sqrt(pow(firstTouch.x - secondTouch.x, 2.0f) + pow(firstTouch.y - secondTouch.y, 2.0f));
+	}
+    
+}
+
+- (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+	if ([touches count] == 1) {
+		// drag methods
+		UITouch* touch = [touches anyObject];
+		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
+		// single drag method needs to go here
+        
+	}else if ([touches count] == 2) {
+		NSArray *twoTouch = [touches allObjects];
+        
+		UITouch *tOne = [twoTouch objectAtIndex:0];
+		UITouch *tTwo = [twoTouch objectAtIndex:1];
+		CGPoint firstTouch = [tOne locationInView:[tOne view]];
+		CGPoint secondTouch = [tTwo locationInView:[tTwo view]];
+		CGFloat currentDistance = sqrt(pow(firstTouch.x - secondTouch.x, 2.0f) + pow(firstTouch.y - secondTouch.y, 2.0f));
+        
+		if (initialDistance == 0) {
+			initialDistance = currentDistance;
+            // set to 0 in case the two touches weren't at the same time
+		} else{
+            [self explorer:(currentDistance - initialDistance)];
+
+        }
+	}
+}
+- (void)explorer:(CGFloat)distance{
+
+    CCLabelTTF *distLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_distance];
+    [distLabel setString:[NSString stringWithFormat:@"%f", distance]];
+    
+    
+    CCLabelTTF *statusLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_status];
+    CCLabelTTF *countLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_count];
+    
+    if (distance > 200) {
+        [statusLabel setString:@"Zoom in"];
+        depth++;
+    } else if (distance < -200) {
+        [statusLabel setString:@"Zoom out"];
+        depth--;
+    }else{
+        [statusLabel setString:nil];
+    }
+    
+    [countLabel setString:[NSString stringWithFormat:@"%i depth", depth]];
+    
+    
+}
+
 @end
