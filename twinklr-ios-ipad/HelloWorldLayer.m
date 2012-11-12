@@ -7,7 +7,7 @@
 //
 
 enum CCNodeTag {
-    CCNodeTag_status = 100,
+    CCNodeTag_status = 10,
     CCNodeTag_distance,
     CCNodeTag_count,
     CCNodeTag_ball
@@ -82,6 +82,31 @@ enum CCNodeTag {
         ball.scaleY = 0.05;
         ball.tag = CCNodeTag_ball;
         [self addChild:ball z:1];
+        
+        for (int i = 0; i < 5; i++) {
+            int starR = arc4random() % 25;
+            int xR = (arc4random() % 1024/2)+1024/4;
+            int yR = (arc4random() % 798/2)+798/4;
+
+            CCSprite *star = [CCSprite spriteWithFile:[NSString stringWithFormat:@"%i.jpg", starR]];
+            [star setPosition:CGPointMake(xR, yR)];
+            star.tag = (depth + 1) * 100 + i;
+            
+            if (xR > size.width/2 && yR > size.height/2) {
+                star.anchorPoint = CGPointMake(0, 0);
+            } else if (xR > size.width/2 && yR < size.height/2) {
+                star.anchorPoint = CGPointMake(1, 0);
+            } else if (xR < size.width/2 && yR > size.height/2) {
+                star.anchorPoint = CGPointMake(0, 1);
+            } else if (xR < size.width/2 && yR < size.height/2) {
+                star.anchorPoint = CGPointMake(1, 1);
+            }
+        
+            
+            [self addChild:star z:star.tag];
+            
+            
+        }
 	}
 	return self;
 }
@@ -186,6 +211,31 @@ enum CCNodeTag {
         point.x = size.width/2 + distance*1.5;
         ballSprite.position = point;
         [statusLabel setString:@" "];
+        
+        for (int i = 0; i < 5; i++) {
+            CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
+            
+            NSLog(@"%i : %@", (depth + 1) * 100 + i, star.description);
+            if (star == nil) break;
+            
+            
+            CGPoint starPoint = star.position;
+            if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
+                starPoint.x += distance/10;
+                starPoint.y += distance/10;
+            } else if (starPoint.x > size.width/2 && starPoint.y < size.height/2) {
+                starPoint.x += distance/10;
+                starPoint.y -= distance/10;
+            } else if (starPoint.x < size.width/2 && starPoint.y > size.height/2) {
+                starPoint.x -= distance/10;
+                starPoint.y += distance/10;
+            } else if (starPoint.x < size.width/2 && starPoint.y < size.height/2) {
+                starPoint.x -= distance/10;
+                starPoint.y -= distance/10;
+            }
+        
+            star.position = starPoint;
+        }
     }
     
 //#ifdef DEBUG
