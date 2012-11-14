@@ -75,7 +75,34 @@ enum CCNodeTag {
         }
         
         depth = 0;
+
+        CCParticleSystem *particleTest = [CCParticleGalaxy node];
+        //    particleTest.texture = [[CCTextureCache sharedTextureCache] addImage: @"stars-grayscale.png"];
+        particleTest.life = 2;
+        particleTest.lifeVar = 0.2f;
+
+        particleTest.duration = 2.5;
+        particleTest.startSize = 3.0f;
+
+        [self addChild:particleTest z:1000 tag:1000000];
         
+//        CCParticleSystem *emitter = [CCParticleGalaxy node];
+////[[[CCParticleExplosion alloc] initWithTotalParticles:150] autorelease];
+//        //입자 수명
+//        emitter.life = 1.0f;
+//        emitter.lifeVar = 0.2f;
+//        //입자 속도
+//        emitter.speedVar = 5.0f;
+//        //입자의 픽셀 단위 크기
+//        emitter.startSize = 30.0f;
+//        //emitter.duration = 3.0f;
+//        [self addChild:emitter z:1000 tag:1000000];
+        
+//        CCParticleSystem *particleTest2 = [CCParticleFire node];
+//        particleTest2.life = 2;
+//        particleTest2.duration = 2.5;
+//
+//        [self addChild:particleTest2 z:1001 tag:1000001];
 	}
 	return self;
 }
