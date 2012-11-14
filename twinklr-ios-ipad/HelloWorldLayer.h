@@ -19,6 +19,9 @@
 //    CGFloat initialDistance;
 //    CGFloat finalDistance;
     int depth;
+    
+    int selectedWidth;
+    NSMutableArray *starPosArray;
 }
 
 // returns a CCScene that contains the HelloWorldLayer as the only child

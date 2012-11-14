@@ -9,8 +9,7 @@
 enum CCNodeTag {
     CCNodeTag_status = 10,
     CCNodeTag_distance,
-    CCNodeTag_count,
-    CCNodeTag_ball
+    CCNodeTag_count
 };
 
 // Import the interfaces
@@ -41,18 +40,9 @@ enum CCNodeTag {
 	// Apple recommends to re-assign "self" with the "super" return value
 	if( (self=[super init])) {
 		
-		// create and initialize a Label
-		CCLabelTTF *label = [CCLabelTTF labelWithString:@"Hello Universe" fontName:@"Marker Felt" fontSize:64];
 		// ask director the the window size
 		CGSize size = [[CCDirector sharedDirector] winSize];
-	
-		// position the label on the center of the screen
-		label.position =  ccp( size.width /2 , size.height/2 );
-		
-		// add the label as a child to this Layer
-		[self addChild: label];
-        
-        
+	        
         CCLabelTTF *countlabel = [CCLabelTTF labelWithString:@"" fontName:@"Marker Felt" fontSize:20];
 		countlabel.position =  ccp( size.width /2 , size.height/2 - 100);
 		[self addChild:countlabel z:1 tag:CCNodeTag_count];
@@ -65,24 +55,11 @@ enum CCNodeTag {
 		scalelabel.position =  ccp( size.width /2 + 200 , 20);
         [self addChild:scalelabel z:1 tag:CCNodeTag_distance];
         
-        CCSprite * bg = [CCSprite spriteWithFile:@"star1.png"];
-        [bg setPosition:ccp(0, 0)];
-//        [bg setScaleY:1.2];
-//        [bg setAnchorPoint:ccp(0,0)];
-        [self addChild:bg z:-1];
-        
         self.isTouchEnabled = YES;
         [CCDirector sharedDirector].openGLView.multipleTouchEnabled = true;
         
-        depth = 0;
-                
-        CCSprite *ball = [CCSprite spriteWithFile:@"earth3am.jpg"];
-        ball.position =  ccp( size.width /2 , size.height/2 + 100);
-        ball.scaleX = 0.05;
-        ball.scaleY = 0.05;
-        ball.tag = CCNodeTag_ball;
-        [self addChild:ball z:1];
         
+        starPosArray = [[NSMutableArray alloc]init];
         for (int i = 0; i < 5; i++) {
             int starR = arc4random() % 25;
             int xR = (arc4random() % 1024/2)+1024/4;
@@ -91,22 +68,14 @@ enum CCNodeTag {
             CCSprite *star = [CCSprite spriteWithFile:[NSString stringWithFormat:@"%i.jpg", starR]];
             [star setPosition:CGPointMake(xR, yR)];
             star.tag = (depth + 1) * 100 + i;
-            
-            if (xR > size.width/2 && yR > size.height/2) {
-                star.anchorPoint = CGPointMake(0, 0);
-            } else if (xR > size.width/2 && yR < size.height/2) {
-                star.anchorPoint = CGPointMake(1, 0);
-            } else if (xR < size.width/2 && yR > size.height/2) {
-                star.anchorPoint = CGPointMake(0, 1);
-            } else if (xR < size.width/2 && yR < size.height/2) {
-                star.anchorPoint = CGPointMake(1, 1);
-            }
-        
-            
             [self addChild:star z:star.tag];
             
-            
+            NSValue* point =[NSValue valueWithCGPoint:star.position];
+            [starPosArray addObject:point];
         }
+        
+        depth = 0;
+        
 	}
 	return self;
 }
@@ -120,26 +89,7 @@ enum CCNodeTag {
 	
 	// don't forget to call "super dealloc"
 	[super dealloc];
-}
-
-- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
-    
-    CCSprite *ballSprite =  (CCSprite *)[self getChildByTag:CCNodeTag_ball];
-    CGPoint point = ballSprite.position;
-    
-    CGSize size = [[CCDirector sharedDirector] winSize];
-    if(point.x != size.width/2){
-        float angle = 90;
-        if (size.width/2 < point.x ) angle *= -1;
-    
-        //animation
-        CGSize size = [[CCDirector sharedDirector] winSize];
-        CCMoveTo *move = [CCMoveTo actionWithDuration:0.3 position:CGPointMake(size.width/2, point.y)];
-        CCRotateBy *roation = [CCRotateBy actionWithDuration:0.3 angle:angle];
-        [ballSprite runAction:[CCSpawn actions:move, roation, nil]];
-    }
-    initialDistance = 0;
+    [starPosArray release];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -150,6 +100,23 @@ enum CCNodeTag {
 		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
 		// single touch dragging needs to go here
         
+        for (int i = 0; i < 5; i++) {
+            CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
+            
+            if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
+                NSLog(@"Touched : %i", i);
+                UIAlertView *alert = [[[UIAlertView alloc]initWithTitle:@"Touched"
+                                                               message:@"Touched"
+                                                              delegate:nil
+                                                     cancelButtonTitle:@"ok"
+                                                     otherButtonTitles:nil, nil] autorelease];
+                [alert show];
+                break;
+            }
+        }
+        
+//        [self schedule:@selector(update:)];
+
 	} else if ([touches count] == 2) {
 		// Get points of both touches
 		NSArray *twoTouch = [touches allObjects];
@@ -168,8 +135,8 @@ enum CCNodeTag {
 //    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
 	if ([touches count] == 1) {
 		// drag methods
-		UITouch* touch = [touches anyObject];
-		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
+//		UITouch* touch = [touches anyObject];
+//		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
 		// single drag method needs to go here
         
 	}else if ([touches count] == 2) {
@@ -186,40 +153,117 @@ enum CCNodeTag {
             // set to 0 in case the two touches weren't at the same time
 		} else{
             [self explorer:(currentDistance - initialDistance)];
-
         }
 	}
 }
+
+- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+//
+    CGSize size = [[CCDirector sharedDirector] winSize];
+//    if(point.x != size.width/2){
+//        float angle = 90;
+//        if (size.width/2 < point.x ) angle *= -1;
+//
+//        //animation
+//        CGSize size = [[CCDirector sharedDirector] winSize];
+//        CCMoveTo *move = [CCMoveTo actionWithDuration:0.3 position:CGPointMake(size.width/2, point.y)];
+//        CCRotateBy *roation = [CCRotateBy actionWithDuration:0.3 angle:angle];
+//        [ballSprite runAction:[CCSpawn actions:move, roation, nil]];
+//    }
+    if(initialDistance != 0){
+        NSArray *twoTouch = [touches allObjects];
+        
+		UITouch *tOne = [twoTouch objectAtIndex:0];
+		UITouch *tTwo = [twoTouch objectAtIndex:1];
+		CGPoint firstTouch = [tOne locationInView:[tOne view]];
+		CGPoint secondTouch = [tTwo locationInView:[tTwo view]];
+		CGFloat currentDistance = sqrt(pow(firstTouch.x - secondTouch.x, 2.0f) + pow(firstTouch.y - secondTouch.y, 2.0f));
+        
+        CGFloat distance = currentDistance - initialDistance;
+        
+        if (distance <= 200) {
+            for (int i = 0; i < 5; i++) {
+                CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
+                
+                CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
+                star.position = starPoint;
+                
+                CCMoveTo *move = [CCMoveTo actionWithDuration:0.2 position:starPoint];
+                CCRotateBy *roation = [CCRotateBy actionWithDuration:0.2 angle:20];
+                CCFadeIn *fadeIn = [CCFadeIn actionWithDuration:0.2];
+                CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
+                
+                [star runAction:[CCSpawn actions:roation, scale, move, fadeIn, nil]];
+            }
+        } else if (distance > 200) {
+            
+            for (int i = 0; i < 5; i++) {
+                CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
+                CGPoint starPoint = star.position;
+                float distance = 1000;
+                if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
+                    starPoint.x += distance/10;
+                    starPoint.y += distance/10;
+                } else if (starPoint.x > size.width/2 && starPoint.y < size.height/2) {
+                    starPoint.x += distance/10;
+                    starPoint.y -= distance/10;
+                } else if (starPoint.x < size.width/2 && starPoint.y > size.height/2) {
+                    starPoint.x -= distance/10;
+                    starPoint.y += distance/10;
+                } else if (starPoint.x < size.width/2 && starPoint.y < size.height/2) {
+                    starPoint.x -= distance/10;
+                    starPoint.y -= distance/10;
+                }
+                
+                CCMoveTo *move = [CCMoveTo actionWithDuration:0.2 position:starPoint];
+                CCRotateBy *roation = [CCRotateBy actionWithDuration:0.2 angle:20];
+                CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:0.2];
+                CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
+                
+                [star runAction:[CCSpawn actions:roation, scale, fadeOut, move, nil]];
+            }
+        }
+    }
+    initialDistance = 0;
+}
+
+//- (void)update:(ccTime)dt
+//{
+//    CGSize size = [[CCDirector sharedDirector] winSize];
+//
+//    if (selectedWidth == 0){
+//        self.position=ccp(size.width, size.height);
+//    } else {
+//        self.position=ccp(selectedWidth, size.height);
+//    }
+//
+//}
+
+
 - (void)explorer:(CGFloat)distance{
+    CGSize size = [[CCDirector sharedDirector] winSize];
 
     CCLabelTTF *distLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_distance];
     CCLabelTTF *statusLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_status];
     CCLabelTTF *countLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_count];
-    CCSprite *ballSprite =  (CCSprite *)[self getChildByTag:CCNodeTag_ball];
-
-    CGPoint point = ballSprite.position;
     
-    if (distance > 200) {
-        [statusLabel setString:@"Zoom in"];
-        depth++;
-    } else if (distance < -200) {
-        [statusLabel setString:@"Zoom out"];
-        depth--;
-    }else{
-        CGSize size = [[CCDirector sharedDirector] winSize];
+//    if (distance > 200) {
+//        [statusLabel setString:@"Zoom in"];
+//        depth++;
+//    } else if (distance < -200) {
+//        [statusLabel setString:@"Zoom out"];
+//        depth--;
+//    }else{
 
-        point.x = size.width/2 + distance*1.5;
-        ballSprite.position = point;
         [statusLabel setString:@" "];
         
         for (int i = 0; i < 5; i++) {
             CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
-            
-            NSLog(@"%i : %@", (depth + 1) * 100 + i, star.description);
             if (star == nil) break;
+                      
+            CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
             
-            
-            CGPoint starPoint = star.position;
             if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
                 starPoint.x += distance/10;
                 starPoint.y += distance/10;
@@ -235,8 +279,16 @@ enum CCNodeTag {
             }
         
             star.position = starPoint;
+//            star.opacity = 255/(distance/10);
+
+//            CCMoveTo *move = [CCMoveTo actionWithDuration:0.0001 position:starPoint];
+            CCRotateBy *roation = [CCRotateBy actionWithDuration:0.1 angle:20];
+//            CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:1];
+            CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
+            NSLog(@"star.opacity : %i", star.opacity);
+            [star runAction:[CCSpawn actions:roation, scale, nil]];
         }
-    }
+//    }
     
 //#ifdef DEBUG
     [countLabel setString:[NSString stringWithFormat:@"%i depth", depth]];
