@@ -12,7 +12,7 @@
 #import "GameConfig.h"
 #import "HelloWorldLayer.h"
 #import "RootViewController.h"
-
+#import "SimpleAudioEngine.h"
 @implementation AppDelegate
 
 @synthesize window;
@@ -112,6 +112,12 @@
 	// Removes the startup flicker
 	[self removeStartupFlicker];
 	
+    SimpleAudioEngine *sae = [SimpleAudioEngine sharedEngine];
+    if (sae.willPlayBackgroundMusic) {
+        [sae playBackgroundMusic:@"background.mp3"];
+        [sae setEffectsVolume:0.5];
+    }
+    
 	// Run the intro Scene
 	[[CCDirector sharedDirector] runWithScene: [HelloWorldLayer scene]];
 }

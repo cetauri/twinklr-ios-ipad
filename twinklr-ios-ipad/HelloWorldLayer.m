@@ -295,8 +295,6 @@ enum CCNodeTag {
 
     [UIView animateWithDuration:distance animations:^(void){
         tableView.frame = CGRectMake(0, 1024-250, 768, 250);
-        
-        
     }];
 }
 

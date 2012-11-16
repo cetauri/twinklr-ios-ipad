@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		AF0689CC16568A8E000668B7 /* tagline.png in Resources */ = {isa = PBXBuildFile; fileRef = AF0689CB16568A8D000668B7 /* tagline.png */; };
+		AF068A1B1656ABF3000668B7 /* background.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AF068A1A1656ABF3000668B7 /* background.mp3 */; };
+		AF068A1D1656ADE0000668B7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF068A1C1656ADE0000668B7 /* Security.framework */; };
 		AF798BDB1656637B00688EFB /* intro@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AF798BDA1656637B00688EFB /* intro@2x.png */; };
 		AF798BE71656638600688EFB /* universe_bg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AF798BDC1656638600688EFB /* universe_bg.jpg */; };
 		AF798BE81656638600688EFB /* universe_bg@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AF798BDD1656638600688EFB /* universe_bg@2x.jpg */; };
@@ -143,6 +145,8 @@
 
 /* Begin PBXFileReference section */
 		AF0689CB16568A8D000668B7 /* tagline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tagline.png; path = Resources/star/tagline.png; sourceTree = "<group>"; };
+		AF068A1A1656ABF3000668B7 /* background.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = background.mp3; path = "twinklr-ios-ipad/background.mp3"; sourceTree = "<group>"; };
+		AF068A1C1656ADE0000668B7 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		AF798BDA1656637B00688EFB /* intro@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "intro@2x.png"; path = "Resources/star/intro@2x.png"; sourceTree = "<group>"; };
 		AF798BDC1656638600688EFB /* universe_bg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = universe_bg.jpg; path = Resources/star/universe_bg.jpg; sourceTree = "<group>"; };
 		AF798BDD1656638600688EFB /* universe_bg@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "universe_bg@2x.jpg"; path = "Resources/star/universe_bg@2x.jpg"; sourceTree = "<group>"; };
@@ -404,10 +408,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF068A1D1656ADE0000668B7 /* Security.framework in Frameworks */,
+				AFA59A9A164B5F2400DA196F /* AudioToolbox.framework in Frameworks */,
 				AFA59A94164B5F2400DA196F /* QuartzCore.framework in Frameworks */,
 				AFA59A96164B5F2400DA196F /* OpenGLES.framework in Frameworks */,
 				AFA59A98164B5F2400DA196F /* OpenAL.framework in Frameworks */,
-				AFA59A9A164B5F2400DA196F /* AudioToolbox.framework in Frameworks */,
 				AFA59A9C164B5F2400DA196F /* AVFoundation.framework in Frameworks */,
 				AFA59A9E164B5F2400DA196F /* UIKit.framework in Frameworks */,
 				AFA59AA0164B5F2400DA196F /* Foundation.framework in Frameworks */,
@@ -442,6 +447,8 @@
 		AFA59A84164B5F2400DA196F = {
 			isa = PBXGroup;
 			children = (
+				AF068A1C1656ADE0000668B7 /* Security.framework */,
+				AF068A1A1656ABF3000668B7 /* background.mp3 */,
 				AF798BF716566A8400688EFB /* Default-Landscape~ipad.png */,
 				AF798BF516566A7400688EFB /* Default-Landscape@2x~ipad.png */,
 				AFA59AA3164B5F2400DA196F /* twinklr-ios-ipad */,
@@ -906,6 +913,7 @@
 				AF798BF616566A7400688EFB /* Default-Landscape@2x~ipad.png in Resources */,
 				AF798BF816566A8400688EFB /* Default-Landscape~ipad.png in Resources */,
 				AF0689CC16568A8E000668B7 /* tagline.png in Resources */,
+				AF068A1B1656ABF3000668B7 /* background.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1064,6 +1072,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: ohsang Kwon (8CW3JD7X34)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: ohsang Kwon (8CW3JD7X34)";
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../temp/appledoc/Libraries\"",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "twinklr-ios-ipad/Prefix.pch";
@@ -1073,6 +1085,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/twinklr-ios-ipad/libs/TestFlightSDK1.1\"",
+					"\"$(SRCROOT)/../../temp/appledoc/Libraries\"",
 				);
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1090,6 +1103,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: ohsang Kwon (8CW3JD7X34)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: ohsang Kwon (8CW3JD7X34)";
 				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../temp/appledoc/Libraries\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "twinklr-ios-ipad/Prefix.pch";
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
@@ -1098,6 +1115,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/twinklr-ios-ipad/libs/TestFlightSDK1.1\"",
+					"\"$(SRCROOT)/../../temp/appledoc/Libraries\"",
 				);
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = "$(TARGET_NAME)";
