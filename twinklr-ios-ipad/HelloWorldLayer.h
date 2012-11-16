@@ -11,7 +11,7 @@
 #import "cocos2d.h"
 
 // HelloWorldLayer
-@interface HelloWorldLayer : CCLayer<CCStandardTouchDelegate>
+@interface HelloWorldLayer : CCLayer<CCStandardTouchDelegate, UITableViewDataSource, UITableViewDelegate>
 {
     double initialDistance;
 //    NSSet *initPointSet;
@@ -27,4 +27,5 @@
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) scene;
 - (void)explorer:(CGFloat)distance;
+- (void)shiftX:(CGFloat)distance;
 @end

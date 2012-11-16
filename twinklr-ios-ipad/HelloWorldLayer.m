@@ -9,12 +9,13 @@
 enum CCNodeTag {
     CCNodeTag_status = 10,
     CCNodeTag_distance,
-    CCNodeTag_count
+    CCNodeTag_count,
+    CCNodeTag_background
 };
 
 // Import the interfaces
 #import "HelloWorldLayer.h"
-
+#import "SpaceLayer.h"
 // HelloWorldLayer implementation
 @implementation HelloWorldLayer
 
@@ -23,12 +24,16 @@ enum CCNodeTag {
 	// 'scene' is an autorelease object.
 	CCScene *scene = [CCScene node];
 	
+    SpaceLayer *backlayer = [SpaceLayer node];
+    backlayer.tag = CCNodeTag_background;
+    [scene addChild:backlayer];
+    
 	// 'layer' is an autorelease object.
 	HelloWorldLayer *layer = [HelloWorldLayer node];
-	
 	// add layer as a child to scene
 	[scene addChild: layer];
 	
+    
 	// return the scene
 	return scene;
 }
@@ -57,15 +62,14 @@ enum CCNodeTag {
         
         self.isTouchEnabled = YES;
         [CCDirector sharedDirector].openGLView.multipleTouchEnabled = true;
-        
+
         
         starPosArray = [[NSMutableArray alloc]init];
         for (int i = 0; i < 5; i++) {
-            int starR = arc4random() % 25;
             int xR = (arc4random() % 1024/2)+1024/4;
             int yR = (arc4random() % 798/2)+798/4;
 
-            CCSprite *star = [CCSprite spriteWithFile:[NSString stringWithFormat:@"%i.jpg", starR]];
+            CCSprite *star = [CCSprite spriteWithFile:@"star_on.png"];
             [star setPosition:CGPointMake(xR, yR)];
             star.tag = (depth + 1) * 100 + i;
             [self addChild:star z:star.tag];
@@ -131,13 +135,7 @@ enum CCNodeTag {
             CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
             
             if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
-                NSLog(@"Touched : %i", i);
-                UIAlertView *alert = [[[UIAlertView alloc]initWithTitle:@"Touched"
-                                                               message:@"Touched"
-                                                              delegate:nil
-                                                     cancelButtonTitle:@"ok"
-                                                     otherButtonTitles:nil, nil] autorelease];
-                [alert show];
+                [self shiftX:-500];
                 break;
             }
         }
@@ -198,7 +196,7 @@ enum CCNodeTag {
 //        CCRotateBy *roation = [CCRotateBy actionWithDuration:0.3 angle:angle];
 //        [ballSprite runAction:[CCSpawn actions:move, roation, nil]];
 //    }
-    if(initialDistance != 0){
+    if(initialDistance != 0 && [touches count] == 2){
         NSArray *twoTouch = [touches allObjects];
         
 		UITouch *tOne = [twoTouch objectAtIndex:0];
@@ -267,6 +265,40 @@ enum CCNodeTag {
 //
 //}
 
+- (void)shiftX:(CGFloat)distance{
+    distance = -250;
+    CCLayer *bgLayer =  (CCLayer *)[self.parent getChildByTag:CCNodeTag_background];
+    CGPoint bgLayerPoint = bgLayer.position;
+    bgLayerPoint.x = distance;
+    
+    ccTime time = 0.5;
+    CCMoveTo *move = [CCMoveTo actionWithDuration:time position:bgLayerPoint];
+    CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
+    [bgLayer runAction:[CCSpawn actions:move, scale, nil]];
+    
+    for(CCNode *node in self.children){
+        CGPoint point = node.position;
+        point.x += distance;
+        
+        CCMoveTo *move = [CCMoveTo actionWithDuration:time position:point];
+        CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
+        [node runAction:[CCSpawn actions:move, scale, nil]];
+    }
+    
+    UITableView *tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 1024-250, 768, 250) style:UITableViewStylePlain];
+    tableView.transform = CGAffineTransformMakeRotation(M_PI/2);
+    tableView.dataSource = self;
+    tableView.delegate = self;
+    [[[CCDirector sharedDirector]openGLView]addSubview:tableView];
+    tableView.frame = CGRectMake(0, 1024, 768, 250);
+    [tableView release];
+
+    [UIView animateWithDuration:distance animations:^(void){
+        tableView.frame = CGRectMake(0, 1024-250, 768, 250);
+        
+        
+    }];
+}
 
 - (void)explorer:(CGFloat)distance{
     CGSize size = [[CCDirector sharedDirector] winSize];
@@ -322,6 +354,24 @@ enum CCNodeTag {
     [distLabel setString:[NSString stringWithFormat:@"%f", distance]];
 //#endif
     
+}
+
+#pragma mark - UITableViewDelegate
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 769;
+}
+
+#pragma mark - UITableViewDataSource
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return 1;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"aaa"];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"tagline.png"]];
+    cell.backgroundColor = [UIColor grayColor];
+    return cell;
 }
 
 @end
