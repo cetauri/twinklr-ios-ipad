@@ -266,6 +266,8 @@ enum CCNodeTag {
 //}
 
 - (void)shiftX:(CGFloat)distance{
+    CGSize size = [[CCDirector sharedDirector] winSize];
+
     distance = -250;
     CCLayer *bgLayer =  (CCLayer *)[self.parent getChildByTag:CCNodeTag_background];
     CGPoint bgLayerPoint = bgLayer.position;
@@ -284,6 +286,12 @@ enum CCNodeTag {
         CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
         [node runAction:[CCSpawn actions:move, scale, nil]];
     }
+    self.isTouchEnabled = NO;
+    CCLayerColor *touchLayer = [CCLayerColor layerWithColor:ccc4(255, 255, 255, 50)];
+    touchLayer.position = CGPointMake(0, 0);
+    touchLayer.isTouchEnabled = YES;
+//    touchLayer.a
+    [self addChild:touchLayer z:9999];
     
     UITableView *tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 1024-250, 768, 250) style:UITableViewStylePlain];
     tableView.transform = CGAffineTransformMakeRotation(M_PI/2);
