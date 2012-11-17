@@ -6,7 +6,7 @@
 //  Copyright __MyCompanyName__ 2012년. All rights reserved.
 //
 #define MAX_DEPTH 10
-#define STAR_COUNT 10
+#define STAR_COUNT 7
 #define MOVE_Penalty 2
 #define TRANSITION_DISTANCE 200
 #define Opacity_DISTANCE 300
@@ -134,28 +134,28 @@ enum CCNodeTag {
 //    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
     
     if ([touches count] == 1) {
-		UITouch *touch = [touches anyObject];
-		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
-		// single touch dragging needs to go here
-        
-        if (_isStarClicked) {
-            //별 클릭 해제
-            CCNode *touchLayer =  (CCNode *)[self getChildByTag:CCNodeTag_touchLayer];
-            if (CGRectContainsPoint(touchLayer.boundingBox, convertedTouch)) {
-                [self removeChildByTag:CCNodeTag_touchLayer cleanup:YES];
-                [self shiftX:0];
-            }
-        }else{
-            //별 클릭시
-            for (int i = 0; i < STAR_COUNT; i++) {
-                CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
-                
-                if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
-                    [self shiftX:-250];
-                    break;
-                }
-            }
-        }
+//		UITouch *touch = [touches anyObject];
+//		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
+//		// single touch dragging needs to go here
+//        
+//        if (_isStarClicked) {
+//            //별 클릭 해제
+//            CCNode *touchLayer =  (CCNode *)[self getChildByTag:CCNodeTag_touchLayer];
+//            if (CGRectContainsPoint(touchLayer.boundingBox, convertedTouch)) {
+//                [self removeChildByTag:CCNodeTag_touchLayer cleanup:YES];
+//                [self shiftX:0];
+//            }
+//        }else{
+//            //별 클릭시
+//            for (int i = 0; i < STAR_COUNT; i++) {
+//                CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
+//                
+//                if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
+//                    [self shiftX:-250];
+//                    break;
+//                }
+//            }
+//        }
     
 	} else if ([touches count] == 2) {
 		// Get points of both touches
@@ -179,6 +179,20 @@ enum CCNodeTag {
 //		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
 		// single drag method needs to go here
         
+        UITouch *touch = [touches anyObject];
+		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
+		// single touch dragging needs to go here
+        
+        for (int i = 0; i < STAR_COUNT; i++) {
+            CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
+            
+            if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
+                NSLog(@"%@", NSStringFromCGPoint(convertedTouch));
+                star.position = convertedTouch;
+                break;
+            }
+        }
+
 	}else if ([touches count] == 2) {
 		NSArray *twoTouch = [touches allObjects];
         
@@ -226,7 +240,13 @@ enum CCNodeTag {
                 CCFadeIn *fadeIn = [CCFadeIn actionWithDuration:0.2];
                 CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
                 
-                [star runAction:[CCSpawn actions:roation, scale, move, fadeIn, nil]];
+                CCSpawn *spawn = [CCSpawn actions:roation, scale, fadeIn, move, nil];
+                
+                id callback = [CCCallFuncN actionWithTarget:self selector:@selector(afterOut:)];
+                [star runAction:[CCSequence actions:spawn, callback, nil]];
+                
+                star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
+                [self removeChild:star cleanup:YES];
             }
             
         } else if (distance > TRANSITION_DISTANCE) {
@@ -249,9 +269,10 @@ enum CCNodeTag {
                     starPoint.y -= distance/10;
                 }
                 
-                CCMoveTo *move = [CCMoveTo actionWithDuration:0.2 position:starPoint];
-                CCRotateBy *roation = [CCRotateBy actionWithDuration:0.2 angle:20];
-                CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:0.2];
+                ccTime time = 0.5;
+                CCMoveTo *move = [CCMoveTo actionWithDuration:time position:starPoint];
+                CCRotateBy *roation = [CCRotateBy actionWithDuration:time angle:20];
+                CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:time];
                 CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
                 
                 CCSpawn *spawn = [CCSpawn actions:roation, scale, fadeOut, move, nil];
@@ -261,7 +282,6 @@ enum CCNodeTag {
 
                 star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
                 [self removeChild:star cleanup:YES];
-                
             }
         }
         
@@ -270,13 +290,17 @@ enum CCNodeTag {
         CCLabelTTF *countLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_count];
 
         if (distance > TRANSITION_DISTANCE) {
-            [statusLabel setString:@"Zoom in"];
-            _depth++;
-            [self drawSpaces:_depth];
-        } else if (distance < -TRANSITION_DISTANCE) {
-            [statusLabel setString:@"Zoom out"];
-            _depth--;
-//            [self drawSpaces:_depth];
+            if (_depth <= MAX_DEPTH) {
+                [statusLabel setString:@"Zoom in"];
+                _depth++;
+                [self drawSpaces:_depth];
+            }
+        } else if (distance <= -TRANSITION_DISTANCE) {
+            if (_depth > 1) {
+                [statusLabel setString:@"Zoom out"];
+                _depth--;
+                [self drawSpaces:_depth];
+            }
         }else{
             [statusLabel setString:@" "];
         }
@@ -294,6 +318,11 @@ enum CCNodeTag {
 - (void)afterOut:(CCNode*)node{
     NSLog(@"%@ : %i", NSStringFromSelector(_cmd), node.tag);
     [self removeChild:node cleanup:YES];
+    
+//    CCSprite *sprite =  (CCSprite *)[self.parent getChildByTag:node.tag +CCNodeTag_BACK_STAR];
+//    if (sprite != nil)
+//    [self removeChild:node cleanup:YES];
+
 }
 
 - (void)shiftX:(CGFloat)distance{
@@ -402,6 +431,7 @@ enum CCNodeTag {
     int level = _depth + 1;
     for (int i = 0; i < STAR_COUNT; i++) {
         CCSprite *star =  (CCSprite *)[self getChildByTag:level * 100 + i + CCNodeTag_BACK_STAR];
+        NSLog(@" CCNodeTag_BACK_STAR : %i", star.tag);
         if (star == nil) break;
         
         int scaleSize = 8;
@@ -422,6 +452,9 @@ enum CCNodeTag {
             starPoint.x -= distance / MOVE_Penalty /scaleSize;
             starPoint.y -= distance / MOVE_Penalty /scaleSize;
         }
+        
+        //TODO 튜닝하자!!!
+//        star.scale = distance/1000;
         star.position = starPoint;
         
         int radius = ccpDistance(star.position, CGPointMake(size.width/2, size.height/2));
@@ -497,7 +530,35 @@ enum CCNodeTag {
 //        [self schedule:@selector(update:)interval:￼];
     }
     
-
+    
+//    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth - 1]];
+//    for (int i = 0; i < starPosArray.count; i++) {
+//        CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
+//        if(star == nil)
+//            [self addChild:star z:star.tag];
+//    }
+//    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth - 1 + CCNodeTag_BACK_STAR]];
+//    for (int i = 0; i < starPosArray.count; i++) {
+//        CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
+//        if(star == nil)
+//            [self addChild:star z:star.tag];
+//    }
+    
+    
+//    
+//    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth + 1]];
+//    for (int i = 0; i < starPosArray.count; i++) {
+//        CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
+//        if(star == nil)
+//            [self addChild:star z:star.tag];
+//    }
+//    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth + 1 + CCNodeTag_BACK_STAR]];
+//    for (int i = 0; i < starPosArray.count; i++) {
+//        CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
+//        if(star == nil)
+//            [self addChild:star z:star.tag];
+//    }
+    
 }
 
 #pragma mark - UITableViewDelegate
