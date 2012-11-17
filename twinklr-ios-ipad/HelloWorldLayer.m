@@ -306,7 +306,7 @@ enum CCNodeTag {
             CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
             [node runAction:[CCSpawn actions:move, scale, nil]];
         }
-
+        _touchDistance = 0;
     } else {
         
         CCLayerColor *touchLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 0, 150)];
@@ -336,10 +336,11 @@ enum CCNodeTag {
             CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
             [node runAction:[CCSpawn actions:move, scale, nil]];
         }
+        
+        _touchDistance = distance;
     }
     
     _isStarClicked = !_isStarClicked;
-    _touchDistance = distance;
 }
 
 - (void)explorer:(CGFloat)distance {
@@ -384,7 +385,6 @@ enum CCNodeTag {
     }
 }
 
-
 - (void)drawSpace:(CGFloat)depth {
 
     NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth]];
@@ -398,17 +398,19 @@ enum CCNodeTag {
             CCSpriteFrame *frame = [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:frameName];
             [frames addObject:frame];
         }
+        
         CCSprite *star = [CCSprite spriteWithSpriteFrame:[frames objectAtIndex:0]];
-
         [star setPosition:starPoint];
         star.tag = (_depth + 1) * 100 + i;
         star.scale = 0.5;
         [self addChild:star z:star.tag];
-            
+
         CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:0.1f];
         CCAnimate *animate = [CCAnimate actionWithAnimation:animation];
         animate = [CCRepeatForever actionWithAction:animate];
         [star runAction:animate];
+        
+//        [self schedule:@selector(update:)interval:<#(ccTime)#>];
     }
 }
 
