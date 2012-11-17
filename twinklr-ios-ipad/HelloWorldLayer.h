@@ -13,19 +13,19 @@
 // HelloWorldLayer
 @interface HelloWorldLayer : CCLayer<CCStandardTouchDelegate, UITableViewDataSource, UITableViewDelegate>
 {
-    double initialDistance;
+    double _initialDistance;
 //    NSSet *initPointSet;
 //    NSSet *finalPointSet;
-//    CGFloat initialDistance;
+//    CGFloat _initialDistance;
 //    CGFloat finalDistance;
-    int depth;
+    int _depth;
     
     int selectedWidth;
-    NSMutableArray *starPosArray;
-    NSMutableDictionary *historyPosDictionary;
+//    NSMutableArray *starPosArray;
+    NSMutableDictionary *_historyPosDictionary;
     
-    BOOL isStarClicked;
-    float touchDistance;
+    BOOL _isStarClicked;
+    float _touchDistance;
 }
 
 // returns a CCScene that contains the HelloWorldLayer as the only child

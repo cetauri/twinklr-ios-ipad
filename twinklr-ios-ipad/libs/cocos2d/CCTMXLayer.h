@@ -45,7 +45,7 @@
  - tiles (CCSprite) can be rotated/scaled/moved with a nice API
  
  If the layer contains a property named "cc_vertexz" with an integer (in can be positive or negative),
- then all the tiles belonging to the layer will use that value as their OpenGL vertex Z for depth.
+ then all the tiles belonging to the layer will use that value as their OpenGL vertex Z for _depth.
 
  On the other hand, if the "cc_vertexz" property has the "automatic" value, then the tiles will use an automatic vertex Z value.
  Also before drawing the tiles, GL_ALPHA_TEST will be enabled, and disabled after drawing them. The used alpha func will be:

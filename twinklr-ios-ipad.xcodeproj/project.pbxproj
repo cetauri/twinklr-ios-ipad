@@ -139,6 +139,8 @@
 		AFA59BF7164B5F2600DA196F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA59BF6164B5F2600DA196F /* AppDelegate.m */; };
 		AFA59BFA164B5F2600DA196F /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA59BF9164B5F2600DA196F /* RootViewController.m */; };
 		AFA59BFD164B5F2600DA196F /* HelloWorldLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA59BFC164B5F2600DA196F /* HelloWorldLayer.m */; };
+		AFC3C68216578AC8004FCF18 /* star_ani.plist in Resources */ = {isa = PBXBuildFile; fileRef = AFC3C68016578AC8004FCF18 /* star_ani.plist */; };
+		AFC3C68316578AC8004FCF18 /* star_ani.png in Resources */ = {isa = PBXBuildFile; fileRef = AFC3C68116578AC8004FCF18 /* star_ani.png */; };
 		AFD18DC1164FA80000FB0BB9 /* earth3am.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AFD18DC0164FA80000FB0BB9 /* earth3am.jpg */; };
 		AFD18DCA164FD7E900FB0BB9 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AFD18DC8164FD7E900FB0BB9 /* libTestFlight.a */; };
 /* End PBXBuildFile section */
@@ -398,6 +400,8 @@
 		AFA59BFB164B5F2600DA196F /* HelloWorldLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelloWorldLayer.h; sourceTree = "<group>"; };
 		AFA59BFC164B5F2600DA196F /* HelloWorldLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HelloWorldLayer.m; sourceTree = "<group>"; };
 		AFA59BFE164B5F2600DA196F /* GameConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameConfig.h; sourceTree = "<group>"; };
+		AFC3C68016578AC8004FCF18 /* star_ani.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = star_ani.plist; path = Resources/animation/star_ani.plist; sourceTree = "<group>"; };
+		AFC3C68116578AC8004FCF18 /* star_ani.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = star_ani.png; path = Resources/animation/star_ani.png; sourceTree = "<group>"; };
 		AFD18DC0164FA80000FB0BB9 /* earth3am.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = earth3am.jpg; path = Resources/earth3am.jpg; sourceTree = "<group>"; };
 		AFD18DC8164FD7E900FB0BB9 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = libs/TestFlightSDK1.1/libTestFlight.a; sourceTree = "<group>"; };
 		AFD18DC9164FD7E900FB0BB9 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestFlight.h; path = libs/TestFlightSDK1.1/TestFlight.h; sourceTree = "<group>"; };
@@ -502,6 +506,7 @@
 		AFA59AA4164B5F2400DA196F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				AFC3C67E16578AB8004FCF18 /* animation */,
 				AF798BD81656634400688EFB /* star */,
 				AFD18DC0164FA80000FB0BB9 /* earth3am.jpg */,
 				AFA59AA5164B5F2400DA196F /* Default.png */,
@@ -830,6 +835,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		AFC3C67E16578AB8004FCF18 /* animation */ = {
+			isa = PBXGroup;
+			children = (
+				AFC3C68016578AC8004FCF18 /* star_ani.plist */,
+				AFC3C68116578AC8004FCF18 /* star_ani.png */,
+			);
+			name = animation;
+			sourceTree = "<group>";
+		};
 		AFD18DC6164FD7D400FB0BB9 /* TestFlightSDK1.1 */ = {
 			isa = PBXGroup;
 			children = (
@@ -914,6 +928,8 @@
 				AF798BF816566A8400688EFB /* Default-Landscape~ipad.png in Resources */,
 				AF0689CC16568A8E000668B7 /* tagline.png in Resources */,
 				AF068A1B1656ABF3000668B7 /* background.mp3 in Resources */,
+				AFC3C68216578AC8004FCF18 /* star_ani.plist in Resources */,
+				AFC3C68316578AC8004FCF18 /* star_ani.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

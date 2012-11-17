@@ -63,14 +63,14 @@
 //            CCSprite *star = [CCSprite spriteWithFile:[NSString stringWithFormat:@"%i.jpg", starR]];
 //            [star setScale:0.5];
 //            [star setPosition:CGPointMake(xR, yR)];
-//            star.tag = (depth + 1) * 100 + i;
+//            star.tag = (_depth + 1) * 100 + i;
 //            [self addChild:star z:star.tag];
 //            
 //            NSValue* point =[NSValue valueWithCGPoint:star.position];
 //            [starPosArray addObject:point];
 //        }
 //        
-//        depth = 0;
+//        _depth = 0;
 //        
 //        CCParticleSystem *particleTest = [CCParticleGalaxy node];
 //        //    particleTest.texture = [[CCTextureCache sharedTextureCache] addImage: @"stars-grayscale.png"];

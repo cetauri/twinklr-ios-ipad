@@ -64,7 +64,7 @@ and when to execute the Scenes.
  The CCDirector is also resposible for:
   - initializing the OpenGL ES context
   - setting the OpenGL pixel format (default on is RGB565)
-  - setting the OpenGL buffer depth (default one is 0-bit)
+  - setting the OpenGL buffer _depth (default one is 0-bit)
   - setting the projection (default one is 3D)
   - setting the orientation (default one is Protrait)
  
@@ -300,7 +300,7 @@ and when to execute the Scenes.
 
 /** enables/disables OpenGL alpha blending */
 - (void) setAlphaBlending: (BOOL) on;
-/** enables/disables OpenGL depth test */
+/** enables/disables OpenGL _depth test */
 - (void) setDepthTest: (BOOL) on;
 
 // Profiler

@@ -134,7 +134,7 @@ default gl blend src function. Compatible with premultiplied alpha images.
 }
 
 /** @def CC_DIRECTOR_INIT
-	- Initializes an EAGLView with 0-bit depth format, and RGB565 render buffer.
+	- Initializes an EAGLView with 0-bit _depth format, and RGB565 render buffer.
 	- The EAGLView view will have multiple touches disabled.
 	- It will create a UIWindow and it will assign it the 'window' variable. 'window' must be declared before calling this marcro.
 	- It will parent the EAGLView to the created window
@@ -145,7 +145,7 @@ default gl blend src function. Compatible with premultiplied alpha images.
 	- It will connect the director with the EAGLView.
 
  IMPORTANT: If you want to use another type of render buffer (eg: RGBA8)
- or if you want to use a 16-bit or 24-bit depth buffer, you should NOT
+ or if you want to use a 16-bit or 24-bit _depth buffer, you should NOT
  use this macro. Instead, you should create the EAGLView manually.
  
  @since v0.99.4
