@@ -111,12 +111,13 @@
 	
 	// Removes the startup flicker
 	[self removeStartupFlicker];
-	
-//    SimpleAudioEngine *sae = [SimpleAudioEngine sharedEngine];
-//    [sae preloadBackgroundMusic:@"background.mp3"];
-//    if (sae.willPlayBackgroundMusic) {
-//        [sae setEffectsVolume:0.5];
-//    }
+    
+#ifdef DEBUG
+#else
+    SimpleAudioEngine *sae = [SimpleAudioEngine sharedEngine];
+    [sae playBackgroundMusic:@"background.mp3"];
+    [sae setEffectsVolume:0.5];
+#endif
     
 	// Run the intro Scene
 	[[CCDirector sharedDirector] runWithScene: [HelloWorldLayer scene]];
