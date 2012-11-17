@@ -5,7 +5,7 @@
 //  Created by cetauri on 12. 11. 8..
 //  Copyright __MyCompanyName__ 2012년. All rights reserved.
 //
-
+#define STAR_COUNT 10
 enum CCNodeTag {
     CCNodeTag_status = 10,
     CCNodeTag_distance,
@@ -67,7 +67,7 @@ enum CCNodeTag {
 
         
         starPosArray = [[NSMutableArray alloc]init];
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < STAR_COUNT; i++) {
             int xR = (arc4random() % 1024/2)+1024/4;
             int yR = (arc4random() % 798/2)+798/4;
 
@@ -142,7 +142,7 @@ enum CCNodeTag {
             }
         }else{
             //별 클릭시
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < STAR_COUNT; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
                 
                 if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
@@ -219,7 +219,7 @@ enum CCNodeTag {
         CGFloat distance = currentDistance - initialDistance;
         
         if (distance <= 200) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < STAR_COUNT; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
                 
                 CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
@@ -234,7 +234,7 @@ enum CCNodeTag {
             }
         } else if (distance > 200) {
             
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < STAR_COUNT; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
                 CGPoint starPoint = star.position;
                 float distance = 1000;
@@ -305,7 +305,7 @@ enum CCNodeTag {
 
     } else {
         
-        CCLayerColor *touchLayer = [CCLayerColor layerWithColor:ccc4(255, 255, 255, 50)];
+        CCLayerColor *touchLayer = [CCLayerColor layerWithColor:ccc4(0, 0, 0, 150)];
         touchLayer.position = CGPointMake(0, 0);
         touchLayer.isTouchEnabled = YES;
         touchLayer.tag = CCNodeTag_touchLayer;
@@ -358,7 +358,7 @@ enum CCNodeTag {
 
         [statusLabel setString:@" "];
         
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < STAR_COUNT; i++) {
             CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
             if (star == nil) break;
                       
