@@ -239,12 +239,13 @@ enum CCNodeTag {
                 CCRotateBy *roation = [CCRotateBy actionWithDuration:0.2 angle:20];
                 CCFadeIn *fadeIn = [CCFadeIn actionWithDuration:0.2];
                 CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
-                
-                CCSpawn *spawn = [CCSpawn actions:roation, scale, fadeIn, move, nil];
-                
-                id callback = [CCCallFuncN actionWithTarget:self selector:@selector(afterOut:)];
-                [star runAction:[CCSequence actions:spawn, callback, nil]];
-                
+                [star runAction:[CCSpawn actions:roation, scale, fadeIn, move, nil]];
+
+//                CCSpawn *spawn = [CCSpawn actions:roation, scale, fadeIn, move, nil];
+//                
+//                id callback = [CCCallFuncN actionWithTarget:self selector:@selector(afterOut:)];
+//                [star runAction:[CCSequence actions:spawn, callback, nil]];
+//                
                 star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
                 [self removeChild:star cleanup:YES];
             }
@@ -431,7 +432,6 @@ enum CCNodeTag {
     int level = _depth + 1;
     for (int i = 0; i < STAR_COUNT; i++) {
         CCSprite *star =  (CCSprite *)[self getChildByTag:level * 100 + i + CCNodeTag_BACK_STAR];
-        NSLog(@" CCNodeTag_BACK_STAR : %i", star.tag);
         if (star == nil) break;
         
         int scaleSize = 8;
