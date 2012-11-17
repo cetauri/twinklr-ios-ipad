@@ -33,5 +33,5 @@
 +(CCScene *) scene;
 - (void)explorer:(CGFloat)distance;
 - (void)shiftX:(CGFloat)distance;
-- (void)drawSpace:(CGFloat)depth;
+- (void)drawSpaces:(CGFloat)depth;
 @end

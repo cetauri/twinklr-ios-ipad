@@ -16,7 +16,8 @@ enum CCNodeTag {
     CCNodeTag_count,
     CCNodeTag_background,
     CCNodeTag_touchLayer,
-    CCNodeTag_tableview
+    CCNodeTag_tableview,
+    CCNodeTag_BACK_STAR = 2000
 };
 
 // Import the interfaces
@@ -47,12 +48,12 @@ enum CCNodeTag {
 		// ask director the the window size
 		CGSize size = [[CCDirector sharedDirector] winSize];
 	       
-        _depth = 0;
-        _historyPosDictionary = [[NSMutableDictionary alloc]init];
-        _isPosDictionary = [[NSMutableDictionary alloc]init];
+        _depth = 1;
+        _historyPosDictionary = [[NSMutableDictionary alloc] init];
+        _isPosDictionary = [[NSMutableDictionary alloc] init];
         
         for (int d = 0; d < MAX_DEPTH; d++) {
-            NSMutableArray *starPosArray = [[NSMutableArray alloc]init];
+            NSMutableArray *starPosArray = [[NSMutableArray alloc] init];
             
             for (int i = 0; i < STAR_COUNT; i++) {
                 int xR = (arc4random() % 1024/2)+1024/4;
@@ -66,7 +67,7 @@ enum CCNodeTag {
             [starPosArray release];
         }
 
-        [self drawSpace:_depth];
+        [self drawSpaces:_depth];
         
 
 //        CCParticleSystem *particleTest = [CCParticleGalaxy node];
@@ -253,7 +254,14 @@ enum CCNodeTag {
                 CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:0.2];
                 CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
                 
-                [star runAction:[CCSpawn actions:roation, scale, fadeOut, move, nil]];
+                CCSpawn *spawn = [CCSpawn actions:roation, scale, fadeOut, move, nil];
+                
+                id callback = [CCCallFuncN actionWithTarget:self selector:@selector(afterOut:)];
+                [star runAction:[CCSequence actions:spawn, callback, nil]];
+
+                star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
+                [self removeChild:star cleanup:YES];
+                
             }
         }
         
@@ -264,11 +272,11 @@ enum CCNodeTag {
         if (distance > TRANSITION_DISTANCE) {
             [statusLabel setString:@"Zoom in"];
             _depth++;
-            [self drawSpace:_depth];
+            [self drawSpaces:_depth];
         } else if (distance < -TRANSITION_DISTANCE) {
             [statusLabel setString:@"Zoom out"];
             _depth--;
-            [self drawSpace:_depth];
+//            [self drawSpaces:_depth];
         }else{
             [statusLabel setString:@" "];
         }
@@ -283,9 +291,12 @@ enum CCNodeTag {
     
 }
 
+- (void)afterOut:(CCNode*)node{
+    NSLog(@"%@ : %i", NSStringFromSelector(_cmd), node.tag);
+    [self removeChild:node cleanup:YES];
+}
+
 - (void)shiftX:(CGFloat)distance{
-    
-//    CGSize size = [[CCDirector sharedDirector] winSize];
     
     CCLayer *bgLayer =  (CCLayer *)[self.parent getChildByTag:CCNodeTag_background];
     CGPoint bgLayerPoint = bgLayer.position;
@@ -390,7 +401,7 @@ enum CCNodeTag {
     //NEXT
     int level = _depth + 1;
     for (int i = 0; i < STAR_COUNT; i++) {
-        CCSprite *star =  (CCSprite *)[self getChildByTag:level * 100 + i];
+        CCSprite *star =  (CCSprite *)[self getChildByTag:level * 100 + i + CCNodeTag_BACK_STAR];
         if (star == nil) break;
         
         int scaleSize = 8;
@@ -431,7 +442,7 @@ enum CCNodeTag {
     }
 }
 
-- (void)drawSpace:(CGFloat)depth {
+- (void)drawSpaces:(CGFloat)depth {
 
     NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth]];
     for (int i = 0; i < starPosArray.count; i++) {
@@ -451,10 +462,10 @@ enum CCNodeTag {
         star.scale = 0.5;
         [self addChild:star z:star.tag];
 
-//        CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:0.1f];
-//        CCAnimate *animate = [CCAnimate actionWithAnimation:animation];
-//        animate = [CCRepeatForever actionWithAction:animate];
-//        [star runAction:animate];
+        CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:0.1f];
+        CCAnimate *animate = [CCAnimate actionWithAnimation:animation];
+        animate = [CCRepeatForever actionWithAction:animate];
+        [star runAction:animate];
         
 //        [self schedule:@selector(update:)interval:];
     }
@@ -471,9 +482,9 @@ enum CCNodeTag {
 //            [frames addObject:frame];
 //        }
 //        
-        CCSprite *star = [CCSprite spriteWithFile:@"star_on.png"];
+        CCSprite *star = [CCSprite spriteWithFile:@"star.png"];
         [star setPosition:starPoint];
-        star.tag = (_depth + 1) * 100 + i;
+        star.tag = (_depth + 1) * 100 + i + CCNodeTag_BACK_STAR;
         star.scale = 0.5;
         star.position = CGPointMake(star.position.x/2 + 1024/4, star.position.y/2 + 768/4);
         [self addChild:star z:star.tag];
