@@ -49,6 +49,7 @@ enum CCNodeTag {
 	       
         _depth = 0;
         _historyPosDictionary = [[NSMutableDictionary alloc]init];
+        _isPosDictionary = [[NSMutableDictionary alloc]init];
         
         for (int d = 0; d < MAX_DEPTH; d++) {
             NSMutableArray *starPosArray = [[NSMutableArray alloc]init];
@@ -124,7 +125,7 @@ enum CCNodeTag {
 	
 	// don't forget to call "super dealloc"
 	[super dealloc];
-//    [starPosArray release];
+    [_isPosDictionary release];
     [_historyPosDictionary release];
 }
 
@@ -146,7 +147,7 @@ enum CCNodeTag {
         }else{
             //별 클릭시
             for (int i = 0; i < STAR_COUNT; i++) {
-                CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth + 1) * 100 + i];
+                CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
                 
                 if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
                     [self shiftX:-250];
@@ -213,7 +214,7 @@ enum CCNodeTag {
         if (distance <= TRANSITION_DISTANCE) {
             
             for (int i = 0; i < STAR_COUNT; i++) {
-                CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth + 1) * 100 + i];
+                CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
                 
                 NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth]];
                 CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
@@ -230,7 +231,7 @@ enum CCNodeTag {
         } else if (distance > TRANSITION_DISTANCE) {
             
             for (int i = 0; i < STAR_COUNT; i++) {
-                CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth + 1) * 100 + i];
+                CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
                 CGPoint starPoint = star.position;
                 float distance = 1000;
                 if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
@@ -263,9 +264,11 @@ enum CCNodeTag {
         if (distance > TRANSITION_DISTANCE) {
             [statusLabel setString:@"Zoom in"];
             _depth++;
+            [self drawSpace:_depth];
         } else if (distance < -TRANSITION_DISTANCE) {
             [statusLabel setString:@"Zoom out"];
             _depth--;
+            [self drawSpace:_depth];
         }else{
             [statusLabel setString:@" "];
         }
@@ -347,7 +350,7 @@ enum CCNodeTag {
     CGSize size = [[CCDirector sharedDirector] winSize];
 
     for (int i = 0; i < STAR_COUNT; i++) {
-        CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth + 1) * 100 + i];
+        CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
         if (star == nil) break;
         
         NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth]];
@@ -364,6 +367,49 @@ enum CCNodeTag {
         } else if (starPoint.x < size.width/2 && starPoint.y < size.height/2) {
             starPoint.x -= distance / MOVE_Penalty;
             starPoint.y -= distance / MOVE_Penalty;
+        }
+        star.position = starPoint;
+        
+        int radius = ccpDistance(star.position, CGPointMake(size.width/2, size.height/2));
+        if (radius < 0) radius *= -1;
+        if (radius > Opacity_DISTANCE) {
+            //TODO 튜닝하자!!!
+            star.opacity = 255/(radius/100);
+        } else {
+            star.opacity = 255;
+        }
+        
+//        CCMoveTo *move = [CCMoveTo actionWithDuration:0.0001 position:starPoint];
+        CCRotateBy *roation = [CCRotateBy actionWithDuration:0.1 angle:20];
+//        CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:1];
+        CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
+//        NSLog(@"star.opacity : %i", star.opacity);
+        [star runAction:[CCSpawn actions:roation, scale, nil]];
+    }
+    
+    //NEXT
+    int level = _depth + 1;
+    for (int i = 0; i < STAR_COUNT; i++) {
+        CCSprite *star =  (CCSprite *)[self getChildByTag:level * 100 + i];
+        if (star == nil) break;
+        
+        int scaleSize = 8;
+        NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", level]];
+        CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
+        starPoint = CGPointMake(starPoint.x/2 + 1024/4, starPoint.y/2 + 768/4);
+
+        if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
+            starPoint.x += distance / MOVE_Penalty /scaleSize;
+            starPoint.y += distance / MOVE_Penalty /scaleSize;
+        } else if (starPoint.x > size.width/2 && starPoint.y < size.height/2) {
+            starPoint.x += distance / MOVE_Penalty /scaleSize;
+            starPoint.y -= distance / MOVE_Penalty /scaleSize;
+        } else if (starPoint.x < size.width/2 && starPoint.y > size.height/2) {
+            starPoint.x -= distance / MOVE_Penalty /scaleSize;
+            starPoint.y += distance / MOVE_Penalty /scaleSize;
+        } else if (starPoint.x < size.width/2 && starPoint.y < size.height/2) {
+            starPoint.x -= distance / MOVE_Penalty /scaleSize;
+            starPoint.y -= distance / MOVE_Penalty /scaleSize;
         }
         star.position = starPoint;
         
@@ -401,17 +447,46 @@ enum CCNodeTag {
         
         CCSprite *star = [CCSprite spriteWithSpriteFrame:[frames objectAtIndex:0]];
         [star setPosition:starPoint];
-        star.tag = (_depth + 1) * 100 + i;
+        star.tag = _depth * 100 + i;
         star.scale = 0.5;
         [self addChild:star z:star.tag];
 
-        CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:0.1f];
-        CCAnimate *animate = [CCAnimate actionWithAnimation:animation];
-        animate = [CCRepeatForever actionWithAction:animate];
-        [star runAction:animate];
+//        CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:0.1f];
+//        CCAnimate *animate = [CCAnimate actionWithAnimation:animation];
+//        animate = [CCRepeatForever actionWithAction:animate];
+//        [star runAction:animate];
         
-//        [self schedule:@selector(update:)interval:<#(ccTime)#>];
+//        [self schedule:@selector(update:)interval:];
     }
+    
+    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth + 1]];
+    for (int i = 0; i < starPosArray.count; i++) {
+        CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
+        
+//        [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"star_ani.plist"];
+//        NSMutableArray *frames = [NSMutableArray array];
+//        for (int i = 1; i < 9; i++) {
+//            NSString *frameName = [NSString stringWithFormat:@"star_0%i.png",i];
+//            CCSpriteFrame *frame = [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:frameName];
+//            [frames addObject:frame];
+//        }
+//        
+        CCSprite *star = [CCSprite spriteWithFile:@"star_on.png"];
+        [star setPosition:starPoint];
+        star.tag = (_depth + 1) * 100 + i;
+        star.scale = 0.5;
+        star.position = CGPointMake(star.position.x/2 + 1024/4, star.position.y/2 + 768/4);
+        [self addChild:star z:star.tag];
+        
+//        CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:0.1f];
+//        CCAnimate *animate = [CCAnimate actionWithAnimation:animation];
+//        animate = [CCRepeatForever actionWithAction:animate];
+//        [star runAction:animate];
+//        
+//        [self schedule:@selector(update:)interval:￼];
+    }
+    
+
 }
 
 #pragma mark - UITableViewDelegate

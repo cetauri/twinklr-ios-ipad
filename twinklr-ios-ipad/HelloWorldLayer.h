@@ -21,8 +21,9 @@
     int _depth;
     
     int selectedWidth;
-//    NSMutableArray *starPosArray;
+    //    NSMutableArray *starPosArray;
     NSMutableDictionary *_historyPosDictionary;
+    NSMutableDictionary *_isPosDictionary;
     
     BOOL _isStarClicked;
     float _touchDistance;
