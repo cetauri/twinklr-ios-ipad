@@ -6,6 +6,9 @@
 //  Copyright __MyCompanyName__ 2012년. All rights reserved.
 //
 #define STAR_COUNT 10
+#define MOVE_Penalty 2
+#define TRANSITION_DISTANCE 200
+#define Opacity_DISTANCE 300
 enum CCNodeTag {
     CCNodeTag_status = 10,
     CCNodeTag_distance,
@@ -23,28 +26,21 @@ enum CCNodeTag {
 
 +(CCScene *) scene
 {
-	// 'scene' is an autorelease object.
 	CCScene *scene = [CCScene node];
 	
     SpaceLayer *backlayer = [SpaceLayer node];
     backlayer.tag = CCNodeTag_background;
     [scene addChild:backlayer];
     
-	// 'layer' is an autorelease object.
 	HelloWorldLayer *layer = [HelloWorldLayer node];
-	// add layer as a child to scene
 	[scene addChild: layer];
 	
-    
-	// return the scene
 	return scene;
 }
 
 // on "init" you need to initialize your instance
 -(id) init
 {
-	// always call "super" init
-	// Apple recommends to re-assign "self" with the "super" return value
 	if( (self=[super init])) {
 		
 		// ask director the the window size
@@ -65,7 +61,7 @@ enum CCNodeTag {
         self.isTouchEnabled = YES;
         [CCDirector sharedDirector].openGLView.multipleTouchEnabled = true;
 
-        
+        historyPosDictionary = [[NSMutableDictionary alloc]init];
         starPosArray = [[NSMutableArray alloc]init];
         for (int i = 0; i < STAR_COUNT; i++) {
             int xR = (arc4random() % 1024/2)+1024/4;
@@ -123,10 +119,11 @@ enum CCNodeTag {
 	// don't forget to call "super dealloc"
 	[super dealloc];
     [starPosArray release];
+    [historyPosDictionary release];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
     
     if ([touches count] == 1) {
 		UITouch *touch = [touches anyObject];
@@ -152,7 +149,6 @@ enum CCNodeTag {
             }
         }
     
-
 	} else if ([touches count] == 2) {
 		// Get points of both touches
 		NSArray *twoTouch = [touches allObjects];
@@ -164,11 +160,11 @@ enum CCNodeTag {
 		// Find the distance between those two points
 		initialDistance = sqrt(pow(firstTouch.x - secondTouch.x, 2.0f) + pow(firstTouch.y - secondTouch.y, 2.0f));
 	}
-    
 }
 
 - (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+    
 	if ([touches count] == 1) {
 		// drag methods
 //		UITouch* touch = [touches anyObject];
@@ -194,19 +190,9 @@ enum CCNodeTag {
 }
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
-//
+//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+
     CGSize size = [[CCDirector sharedDirector] winSize];
-//    if(point.x != size.width/2){
-//        float angle = 90;
-//        if (size.width/2 < point.x ) angle *= -1;
-//
-//        //animation
-//        CGSize size = [[CCDirector sharedDirector] winSize];
-//        CCMoveTo *move = [CCMoveTo actionWithDuration:0.3 position:CGPointMake(size.width/2, point.y)];
-//        CCRotateBy *roation = [CCRotateBy actionWithDuration:0.3 angle:angle];
-//        [ballSprite runAction:[CCSpawn actions:move, roation, nil]];
-//    }
     if(initialDistance != 0 && [touches count] == 2){
         NSArray *twoTouch = [touches allObjects];
         
@@ -218,7 +204,8 @@ enum CCNodeTag {
         
         CGFloat distance = currentDistance - initialDistance;
         
-        if (distance <= 200) {
+        if (distance <= TRANSITION_DISTANCE) {
+            
             for (int i = 0; i < STAR_COUNT; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
                 
@@ -232,7 +219,8 @@ enum CCNodeTag {
                 
                 [star runAction:[CCSpawn actions:roation, scale, move, fadeIn, nil]];
             }
-        } else if (distance > 200) {
+            
+        } else if (distance > TRANSITION_DISTANCE) {
             
             for (int i = 0; i < STAR_COUNT; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
@@ -260,21 +248,30 @@ enum CCNodeTag {
                 [star runAction:[CCSpawn actions:roation, scale, fadeOut, move, nil]];
             }
         }
+        
+        CCLabelTTF *distLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_distance];
+        CCLabelTTF *statusLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_status];
+        CCLabelTTF *countLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_count];
+
+        if (distance > TRANSITION_DISTANCE) {
+            [statusLabel setString:@"Zoom in"];
+            depth++;
+        } else if (distance < -TRANSITION_DISTANCE) {
+            [statusLabel setString:@"Zoom out"];
+            depth--;
+        }else{
+            [statusLabel setString:@" "];
+        }
+        
+//#ifdef DEBUG
+        [countLabel setString:[NSString stringWithFormat:@"%i depth", depth]];
+        [distLabel setString:[NSString stringWithFormat:@"%f", distance]];
+//#endif
+        
     }
     initialDistance = 0;
+    
 }
-
-//- (void)update:(ccTime)dt
-//{
-//    CGSize size = [[CCDirector sharedDirector] winSize];
-//
-//    if (selectedWidth == 0){
-//        self.position=ccp(size.width, size.height);
-//    } else {
-//        self.position=ccp(selectedWidth, size.height);
-//    }
-//
-//}
 
 - (void)shiftX:(CGFloat)distance{
     
@@ -332,69 +329,51 @@ enum CCNodeTag {
             CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
             [node runAction:[CCSpawn actions:move, scale, nil]];
         }
-
     }
     
- 
     isStarClicked = !isStarClicked;
     touchDistance = distance;
-
 }
 
 - (void)explorer:(CGFloat)distance{
     CGSize size = [[CCDirector sharedDirector] winSize];
 
-    CCLabelTTF *distLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_distance];
-    CCLabelTTF *statusLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_status];
-    CCLabelTTF *countLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_count];
-    
-//    if (distance > 200) {
-//        [statusLabel setString:@"Zoom in"];
-//        depth++;
-//    } else if (distance < -200) {
-//        [statusLabel setString:@"Zoom out"];
-//        depth--;
-//    }else{
-
-        [statusLabel setString:@" "];
-        
-        for (int i = 0; i < STAR_COUNT; i++) {
-            CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
-            if (star == nil) break;
-                      
-            CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
-            
-            if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
-                starPoint.x += distance/10;
-                starPoint.y += distance/10;
-            } else if (starPoint.x > size.width/2 && starPoint.y < size.height/2) {
-                starPoint.x += distance/10;
-                starPoint.y -= distance/10;
-            } else if (starPoint.x < size.width/2 && starPoint.y > size.height/2) {
-                starPoint.x -= distance/10;
-                starPoint.y += distance/10;
-            } else if (starPoint.x < size.width/2 && starPoint.y < size.height/2) {
-                starPoint.x -= distance/10;
-                starPoint.y -= distance/10;
-            }
-        
-            star.position = starPoint;
-//            star.opacity = 255/(distance/10);
-
-//            CCMoveTo *move = [CCMoveTo actionWithDuration:0.0001 position:starPoint];
-            CCRotateBy *roation = [CCRotateBy actionWithDuration:0.1 angle:20];
-//            CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:1];
-            CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
-            NSLog(@"star.opacity : %i", star.opacity);
-            [star runAction:[CCSpawn actions:roation, scale, nil]];
+    for (int i = 0; i < STAR_COUNT; i++) {
+        CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
+        if (star == nil) break;
+                  
+        CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
+        if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
+            starPoint.x += distance / MOVE_Penalty;
+            starPoint.y += distance / MOVE_Penalty;
+        } else if (starPoint.x > size.width/2 && starPoint.y < size.height/2) {
+            starPoint.x += distance / MOVE_Penalty;
+            starPoint.y -= distance / MOVE_Penalty;
+        } else if (starPoint.x < size.width/2 && starPoint.y > size.height/2) {
+            starPoint.x -= distance / MOVE_Penalty;
+            starPoint.y += distance / MOVE_Penalty;
+        } else if (starPoint.x < size.width/2 && starPoint.y < size.height/2) {
+            starPoint.x -= distance / MOVE_Penalty;
+            starPoint.y -= distance / MOVE_Penalty;
         }
-//    }
-    
-//#ifdef DEBUG
-    [countLabel setString:[NSString stringWithFormat:@"%i depth", depth]];
-    [distLabel setString:[NSString stringWithFormat:@"%f", distance]];
-//#endif
-    
+        star.position = starPoint;
+        
+        int radius = ccpDistance(star.position, CGPointMake(size.width/2, size.height/2));
+        if (radius < 0) radius *= -1;
+        if (radius > Opacity_DISTANCE) {
+            //TODO 튜닝하자!!!
+            star.opacity = 255/(radius/100);
+        } else {
+            star.opacity = 255;
+        }
+        
+//        CCMoveTo *move = [CCMoveTo actionWithDuration:0.0001 position:starPoint];
+        CCRotateBy *roation = [CCRotateBy actionWithDuration:0.1 angle:20];
+//        CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:1];
+        CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
+//        NSLog(@"star.opacity : %i", star.opacity);
+        [star runAction:[CCSpawn actions:roation, scale, nil]];
+    }
 }
 
 #pragma mark - UITableViewDelegate
