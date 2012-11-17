@@ -10,7 +10,9 @@ enum CCNodeTag {
     CCNodeTag_status = 10,
     CCNodeTag_distance,
     CCNodeTag_count,
-    CCNodeTag_background
+    CCNodeTag_background,
+    CCNodeTag_touchLayer,
+    CCNodeTag_tableview
 };
 
 // Import the interfaces
@@ -124,23 +126,32 @@ enum CCNodeTag {
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
     
     if ([touches count] == 1) {
 		UITouch *touch = [touches anyObject];
 		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
 		// single touch dragging needs to go here
         
-        for (int i = 0; i < 5; i++) {
-            CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
-            
-            if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
-                [self shiftX:-500];
-                break;
+        if (isStarClicked) {
+            //별 클릭 해제
+            CCNode *touchLayer =  (CCNode *)[self getChildByTag:CCNodeTag_touchLayer];
+            if (CGRectContainsPoint(touchLayer.boundingBox, convertedTouch)) {
+                [self removeChildByTag:CCNodeTag_touchLayer cleanup:YES];
+                [self shiftX:0];
+            }
+        }else{
+            //별 클릭시
+            for (int i = 0; i < 5; i++) {
+                CCSprite *star =  (CCSprite *)[self getChildByTag:(/*depth +*/ 1) * 100 + i];
+                
+                if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
+                    [self shiftX:-250];
+                    break;
+                }
             }
         }
-        
-//        [self schedule:@selector(update:)];
+    
 
 	} else if ([touches count] == 2) {
 		// Get points of both touches
@@ -157,7 +168,7 @@ enum CCNodeTag {
 }
 
 - (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
 	if ([touches count] == 1) {
 		// drag methods
 //		UITouch* touch = [touches anyObject];
@@ -183,7 +194,7 @@ enum CCNodeTag {
 }
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
 //
     CGSize size = [[CCDirector sharedDirector] winSize];
 //    if(point.x != size.width/2){
@@ -266,9 +277,9 @@ enum CCNodeTag {
 //}
 
 - (void)shiftX:(CGFloat)distance{
-    CGSize size = [[CCDirector sharedDirector] winSize];
-
-    distance = -250;
+    
+//    CGSize size = [[CCDirector sharedDirector] winSize];
+    
     CCLayer *bgLayer =  (CCLayer *)[self.parent getChildByTag:CCNodeTag_background];
     CGPoint bgLayerPoint = bgLayer.position;
     bgLayerPoint.x = distance;
@@ -278,32 +289,56 @@ enum CCNodeTag {
     CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
     [bgLayer runAction:[CCSpawn actions:move, scale, nil]];
     
-    for(CCNode *node in self.children){
-        CGPoint point = node.position;
-        point.x += distance;
+    if(distance == 0){
         
-        CCMoveTo *move = [CCMoveTo actionWithDuration:time position:point];
-        CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
-        [node runAction:[CCSpawn actions:move, scale, nil]];
-    }
-    self.isTouchEnabled = NO;
-    CCLayerColor *touchLayer = [CCLayerColor layerWithColor:ccc4(255, 255, 255, 50)];
-    touchLayer.position = CGPointMake(0, 0);
-    touchLayer.isTouchEnabled = YES;
-//    touchLayer.a
-    [self addChild:touchLayer z:9999];
-    
-    UITableView *tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 1024-250, 768, 250) style:UITableViewStylePlain];
-    tableView.transform = CGAffineTransformMakeRotation(M_PI/2);
-    tableView.dataSource = self;
-    tableView.delegate = self;
-    [[[CCDirector sharedDirector]openGLView]addSubview:tableView];
-    tableView.frame = CGRectMake(0, 1024, 768, 250);
-    [tableView release];
+        UIView *view = [[[CCDirector sharedDirector]openGLView]viewWithTag:CCNodeTag_tableview];
+        [view removeFromSuperview];
 
-    [UIView animateWithDuration:distance animations:^(void){
-        tableView.frame = CGRectMake(0, 1024-250, 768, 250);
-    }];
+        for(CCNode *node in self.children){
+            CGPoint point = node.position;
+            point.x -= touchDistance;
+            
+            CCMoveTo *move = [CCMoveTo actionWithDuration:time position:point];
+            CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
+            [node runAction:[CCSpawn actions:move, scale, nil]];
+        }
+
+    } else {
+        
+        CCLayerColor *touchLayer = [CCLayerColor layerWithColor:ccc4(255, 255, 255, 50)];
+        touchLayer.position = CGPointMake(0, 0);
+        touchLayer.isTouchEnabled = YES;
+        touchLayer.tag = CCNodeTag_touchLayer;
+        [self addChild:touchLayer z:9999];
+        
+        UITableView *tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 1024-250, 768, 250) style:UITableViewStylePlain];
+        tableView.transform = CGAffineTransformMakeRotation(M_PI/2);
+        tableView.dataSource = self;
+        tableView.delegate = self;
+        tableView.tag = CCNodeTag_tableview;
+        [[[CCDirector sharedDirector]openGLView]addSubview:tableView];
+        tableView.frame = CGRectMake(0, 1024, 768, 250);
+        [tableView release];
+        
+        [UIView animateWithDuration:distance animations:^(void){
+            tableView.frame = CGRectMake(0, 1024-250, 768, 250);
+        }];
+        
+        for(CCNode *node in self.children){
+            CGPoint point = node.position;
+            point.x += distance;
+            
+            CCMoveTo *move = [CCMoveTo actionWithDuration:time position:point];
+            CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
+            [node runAction:[CCSpawn actions:move, scale, nil]];
+        }
+
+    }
+    
+ 
+    isStarClicked = !isStarClicked;
+    touchDistance = distance;
+
 }
 
 - (void)explorer:(CGFloat)distance{
