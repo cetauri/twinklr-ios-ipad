@@ -23,6 +23,8 @@ enum CCNodeTag {
 // Import the interfaces
 #import "HelloWorldLayer.h"
 #import "SpaceLayer.h"
+#import "DataManager.h"
+
 // HelloWorldLayer implementation
 @implementation HelloWorldLayer
 
@@ -36,8 +38,8 @@ enum CCNodeTag {
     
 	HelloWorldLayer *layer = [HelloWorldLayer node];
 	[scene addChild: layer];
-	
-	return scene;
+    [DataManager sharedInstance];
+    return scene;
 }
 
 // on "init" you need to initialize your instance
@@ -52,7 +54,7 @@ enum CCNodeTag {
         _historyPosDictionary = [[NSMutableDictionary alloc] init];
         _isPosDictionary = [[NSMutableDictionary alloc] init];
         
-        for (int d = 0; d < MAX_DEPTH; d++) {
+        for (int d = _depth; d < _depth + MAX_DEPTH; d++) {
             NSMutableArray *starPosArray = [[NSMutableArray alloc] init];
             
             for (int i = 0; i < STAR_COUNT; i++) {
@@ -134,29 +136,27 @@ enum CCNodeTag {
 //    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
     
     if ([touches count] == 1) {
-//		UITouch *touch = [touches anyObject];
-//		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
-//		// single touch dragging needs to go here
-//        
-//        if (_isStarClicked) {
-//            //별 클릭 해제
-//            CCNode *touchLayer =  (CCNode *)[self getChildByTag:CCNodeTag_touchLayer];
-//            if (CGRectContainsPoint(touchLayer.boundingBox, convertedTouch)) {
-//                [self removeChildByTag:CCNodeTag_touchLayer cleanup:YES];
-//                [self shiftX:0];
-//            }
-//        }else{
-//            //별 클릭시
-//            for (int i = 0; i < STAR_COUNT; i++) {
-//                CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
-//                
-//                if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
-//                    [self shiftX:-250];
-//                    break;
-//                }
-//            }
-//        }
-    
+		UITouch *touch = [touches anyObject];
+		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
+		// single touch dragging needs to go here
+        
+        if (_isStarClicked) {
+            //별 클릭 해제
+            CCNode *touchLayer =  (CCNode *)[self getChildByTag:CCNodeTag_touchLayer];
+            if (CGRectContainsPoint(touchLayer.boundingBox, convertedTouch)) {
+                [self removeChildByTag:CCNodeTag_touchLayer cleanup:YES];
+                [self shiftX:0];
+            }
+        }else{
+            //별 클릭시
+            for (int i = 0; i < STAR_COUNT; i++) {
+                CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
+                if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
+                    [self shiftX:-250];
+                    break;
+                }
+            }
+        }
 	} else if ([touches count] == 2) {
 		// Get points of both touches
 		NSArray *twoTouch = [touches allObjects];
@@ -175,23 +175,18 @@ enum CCNodeTag {
     
 	if ([touches count] == 1) {
 		// drag methods
-//		UITouch* touch = [touches anyObject];
+//      UITouch *touch = [touches anyObject];
 //		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
-		// single drag method needs to go here
-        
-        UITouch *touch = [touches anyObject];
-		CGPoint convertedTouch = [self convertTouchToNodeSpace: touch];
-		// single touch dragging needs to go here
-        
-        for (int i = 0; i < STAR_COUNT; i++) {
-            CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
-            
-            if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
-                NSLog(@"%@", NSStringFromCGPoint(convertedTouch));
-                star.position = convertedTouch;
-                break;
-            }
-        }
+//		// single touch dragging needs to go here
+//        
+//        for (int i = 0; i < STAR_COUNT; i++) {
+//            CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];      
+//            if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
+//                NSLog(@"%@", NSStringFromCGPoint(convertedTouch));
+//                star.position = convertedTouch;
+//                break;
+//            }
+//        }
 
 	}else if ([touches count] == 2) {
 		NSArray *twoTouch = [touches allObjects];
@@ -204,7 +199,6 @@ enum CCNodeTag {
         
 		if (_initialDistance == 0) {
 			_initialDistance = currentDistance;
-            // set to 0 in case the two touches weren't at the same time
 		} else{
             [self explorer:(currentDistance - _initialDistance)];
         }
@@ -239,13 +233,13 @@ enum CCNodeTag {
                 CCRotateBy *roation = [CCRotateBy actionWithDuration:0.2 angle:20];
                 CCFadeIn *fadeIn = [CCFadeIn actionWithDuration:0.2];
                 CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
-                [star runAction:[CCSpawn actions:roation, scale, fadeIn, move, nil]];
+//                [star runAction:[CCSpawn actions:roation, scale, fadeIn, move, nil]];
 
-//                CCSpawn *spawn = [CCSpawn actions:roation, scale, fadeIn, move, nil];
-//                
-//                id callback = [CCCallFuncN actionWithTarget:self selector:@selector(afterOut:)];
-//                [star runAction:[CCSequence actions:spawn, callback, nil]];
-//                
+                CCSpawn *spawn = [CCSpawn actions:roation, scale, fadeIn, move, nil];
+                
+                id callback = [CCCallFuncN actionWithTarget:self selector:@selector(afterOut:)];
+                [star runAction:[CCSequence actions:spawn, callback, nil]];
+
                 star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
                 [self removeChild:star cleanup:YES];
             }
