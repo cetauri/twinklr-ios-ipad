@@ -14,16 +14,12 @@
 @interface HelloWorldLayer : CCLayer<CCStandardTouchDelegate, UITableViewDataSource, UITableViewDelegate>
 {
     double _initialDistance;
-//    NSSet *initPointSet;
-//    NSSet *finalPointSet;
-//    CGFloat _initialDistance;
-//    CGFloat finalDistance;
+
     int _depth;
     
     int selectedWidth;
     //    NSMutableArray *starPosArray;
-    NSMutableDictionary *_historyPosDictionary;
-    NSMutableDictionary *_isPosDictionary;
+//    NSMutableDictionary *_historyPosDictionary;
     
     BOOL _isStarClicked;
     float _touchDistance;
@@ -34,4 +30,5 @@
 - (void)explorer:(CGFloat)distance;
 - (void)shiftX:(CGFloat)distance;
 - (void)drawSpaces:(CGFloat)depth;
+- (CGPoint)pointResacle:(CGPoint)point;
 @end

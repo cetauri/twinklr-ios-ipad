@@ -26,13 +26,15 @@
         NSString *filePath = [[NSBundle mainBundle] pathForResource:@"twinklr" ofType:@"json"];
         NSString *text = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
 
-        zDictionary = [text objectFromJSONString];
+        zDictionary = [[NSMutableDictionary alloc] initWithDictionary:[text objectFromJSONString]];
     }
     return self;
 }
 
 -(NSArray *)starsInZ:(int)z{
-    return (NSArray *)[zDictionary objectForKey:[NSString stringWithFormat:@"%i", z]];
+    NSArray *array = [zDictionary objectForKey:[NSString stringWithFormat:@"%i", z+1]];
+//    NSLog(@"array : %@", array.description);
+    return array;
 }
 
 - (void) dealloc

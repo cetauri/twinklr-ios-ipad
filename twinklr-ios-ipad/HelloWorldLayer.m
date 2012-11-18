@@ -6,7 +6,7 @@
 //  Copyright __MyCompanyName__ 2012년. All rights reserved.
 //
 #define MAX_DEPTH 10
-#define STAR_COUNT 7
+//#define STAR_COUNT 7
 #define MOVE_Penalty 2
 #define TRANSITION_DISTANCE 200
 #define Opacity_DISTANCE 300
@@ -46,60 +46,24 @@ enum CCNodeTag {
 -(id) init
 {
 	if( (self=[super init])) {
-		
+        
 		// ask director the the window size
 		CGSize size = [[CCDirector sharedDirector] winSize];
-	       
-        _depth = 1;
-        _historyPosDictionary = [[NSMutableDictionary alloc] init];
-        _isPosDictionary = [[NSMutableDictionary alloc] init];
-        
-        for (int d = _depth; d < _depth + MAX_DEPTH; d++) {
-            NSMutableArray *starPosArray = [[NSMutableArray alloc] init];
-            
-            for (int i = 0; i < STAR_COUNT; i++) {
-                int xR = (arc4random() % 1024/2)+1024/4;
-                int yR = (arc4random() % 798/2)+798/4;
-                
-                NSValue* point =[NSValue valueWithCGPoint:CGPointMake(xR, yR)];
-                [starPosArray addObject:point];
-            }
-            
-            [_historyPosDictionary setObject:starPosArray forKey:[NSString stringWithFormat:@"%i", d]];
-            [starPosArray release];
-        }
 
+        _depth = 1;
         [self drawSpaces:_depth];
         
 
-//        CCParticleSystem *particleTest = [CCParticleGalaxy node];
-//        //    particleTest.texture = [[CCTextureCache sharedTextureCache] addImage: @"stars-grayscale.png"];
-//        particleTest.life = 2;
-//        particleTest.lifeVar = 0.2f;
-//
-//        particleTest.duration = 2.5;
-//        particleTest.startSize = 3.0f;
-//
-//        [self addChild:particleTest z:1000 tag:1000000];
-//        
-//        CCParticleSystem *emitter = [CCParticleGalaxy node];
-////[[[CCParticleExplosion alloc] initWithTotalParticles:150] autorelease];
-//        //입자 수명
-//        emitter.life = 1.0f;
-//        emitter.lifeVar = 0.2f;
-//        //입자 속도
-//        emitter.speedVar = 5.0f;
-//        //입자의 픽셀 단위 크기
-//        emitter.startSize = 30.0f;
-//        //emitter.duration = 3.0f;
-//        [self addChild:emitter z:1000 tag:1000000];
-        
-//        CCParticleSystem *particleTest2 = [CCParticleFire node];
-//        particleTest2.life = 2;
-//        particleTest2.duration = 2.5;
-//
-//        [self addChild:particleTest2 z:1001 tag:1000001];
-        
+        CCParticleSystem *particleTest = [CCParticleSun node];
+        //    particleTest.texture = [[CCTextureCache sharedTextureCache] addImage: @"stars-grayscale.png"];
+        particleTest.life = 2;
+        particleTest.lifeVar = 0.2f;
+
+        particleTest.duration = 1.5;
+        particleTest.startSize = 3.0f;
+
+        [self addChild:particleTest z:1000 tag:1000000];
+
         self.isTouchEnabled = YES;
         [CCDirector sharedDirector].openGLView.multipleTouchEnabled = true;
 
@@ -128,8 +92,7 @@ enum CCNodeTag {
 	
 	// don't forget to call "super dealloc"
 	[super dealloc];
-    [_isPosDictionary release];
-    [_historyPosDictionary release];
+//    [_historyPosDictionary release];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -149,7 +112,8 @@ enum CCNodeTag {
             }
         }else{
             //별 클릭시
-            for (int i = 0; i < STAR_COUNT; i++) {
+            NSArray *starPosArray = [[DataManager sharedInstance] starsInZ:_depth];
+            for (int i = 0; i < starPosArray.count; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
                 if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
                     [self shiftX:-250];
@@ -204,7 +168,6 @@ enum CCNodeTag {
         }
 	}
 }
-
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
 //    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
 
@@ -219,14 +182,16 @@ enum CCNodeTag {
 		CGFloat currentDistance = sqrt(pow(firstTouch.x - secondTouch.x, 2.0f) + pow(firstTouch.y - secondTouch.y, 2.0f));
         
         CGFloat distance = currentDistance - _initialDistance;
-        
+
+        NSArray *starPosArray = [[DataManager sharedInstance] starsInZ:_depth];
         if (distance <= TRANSITION_DISTANCE) {
             
-            for (int i = 0; i < STAR_COUNT; i++) {
+            for (int i = 0; i < starPosArray.count; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
                 
-                NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth]];
-                CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
+                NSDictionary *starInfo = [starPosArray objectAtIndex:i];
+                CGPoint starPoint = CGPointMake([[starInfo objectForKey:@"star_x"]floatValue], [[starInfo objectForKey:@"star_y"]floatValue]);
+                starPoint = [self pointResacle:starPoint];
                 star.position = starPoint;
                 
                 CCMoveTo *move = [CCMoveTo actionWithDuration:0.2 position:starPoint];
@@ -246,7 +211,7 @@ enum CCNodeTag {
             
         } else if (distance > TRANSITION_DISTANCE) {
             
-            for (int i = 0; i < STAR_COUNT; i++) {
+            for (int i = 0; i < starPosArray.count; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
                 CGPoint starPoint = star.position;
                 float distance = 1000;
@@ -383,13 +348,15 @@ enum CCNodeTag {
 
 - (void)explorer:(CGFloat)distance {
     CGSize size = [[CCDirector sharedDirector] winSize];
-
-    for (int i = 0; i < STAR_COUNT; i++) {
+    
+    NSArray *starPosArray = [[DataManager sharedInstance] starsInZ:_depth];
+    for (int i = 0; i < starPosArray.count; i++) {
         CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
         if (star == nil) break;
-        
-        NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth]];
-        CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
+
+        NSDictionary *starInfo = [starPosArray objectAtIndex:i];
+        CGPoint starPoint = CGPointMake([[starInfo objectForKey:@"star_x"]floatValue], [[starInfo objectForKey:@"star_y"]floatValue]);
+        starPoint = [self pointResacle:starPoint];
         if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
             starPoint.x += distance / MOVE_Penalty;
             starPoint.y += distance / MOVE_Penalty;
@@ -424,13 +391,18 @@ enum CCNodeTag {
     
     //NEXT
     int level = _depth + 1;
-    for (int i = 0; i < STAR_COUNT; i++) {
+    starPosArray = [[DataManager sharedInstance] starsInZ:level];
+    for (int i = 0; i < starPosArray.count; i++) {
         CCSprite *star =  (CCSprite *)[self getChildByTag:level * 100 + i + CCNodeTag_BACK_STAR];
         if (star == nil) break;
         
         int scaleSize = 8;
-        NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", level]];
-        CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
+//        NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", level]];
+
+//        CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
+        NSDictionary *starInfo = [starPosArray objectAtIndex:i];
+        CGPoint starPoint = CGPointMake([[starInfo objectForKey:@"star_x"]floatValue], [[starInfo objectForKey:@"star_y"]floatValue]);
+        starPoint = [self pointResacle:starPoint];
         starPoint = CGPointMake(starPoint.x/2 + 1024/4, starPoint.y/2 + 768/4);
 
         if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
@@ -471,10 +443,17 @@ enum CCNodeTag {
 
 - (void)drawSpaces:(CGFloat)depth {
 
-    NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth]];
+//    NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth]];
+    NSArray *starPosArray = [[DataManager sharedInstance] starsInZ:_depth];
+
     for (int i = 0; i < starPosArray.count; i++) {
-        CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
+        NSDictionary *dic = [starPosArray objectAtIndex:i];
         
+        CGPoint starPoint = CGPointMake([[dic objectForKey:@"star_x"]floatValue], [[dic objectForKey:@"star_y"]floatValue]);
+        
+//        NSLog(@"starPoint !!!! %@", NSStringFromCGPoint(starPoint));
+        starPoint = [self pointResacle:starPoint];
+//        NSLog(@"starPoint ---- %@", NSStringFromCGPoint(starPoint));
         [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"star_ani.plist"];
         NSMutableArray *frames = [NSMutableArray array];
         for (int i = 1; i < 9; i++) {
@@ -497,9 +476,13 @@ enum CCNodeTag {
 //        [self schedule:@selector(update:)interval:];
     }
     
-    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth + 1]];
+//    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth + 1]];
+    starPosArray = [[DataManager sharedInstance] starsInZ:_depth+1];
+
     for (int i = 0; i < starPosArray.count; i++) {
-        CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
+        NSDictionary *starInfo = [starPosArray objectAtIndex:i];
+        CGPoint starPoint = CGPointMake([[starInfo objectForKey:@"star_x"]floatValue], [[starInfo objectForKey:@"star_y"]floatValue]);
+        starPoint = [self pointResacle:starPoint];
         
 //        [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"star_ani.plist"];
 //        NSMutableArray *frames = [NSMutableArray array];
@@ -553,6 +536,11 @@ enum CCNodeTag {
 //            [self addChild:star z:star.tag];
 //    }
     
+}
+
+- (CGPoint)pointResacle:(CGPoint)point{
+    CGSize size = [[CCDirector sharedDirector] winSize];
+    return CGPointMake(point.x * size.width/320, point.y * size.height/200);
 }
 
 #pragma mark - UITableViewDelegate
