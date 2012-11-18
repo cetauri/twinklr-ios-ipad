@@ -53,14 +53,14 @@ enum CCNodeTag {
         _depth = 0;
         [self drawSpaces:_depth];
         
-        CCParticleSystem *particleTest = [CCParticleSun node];
-        particleTest.life = 2;
-        particleTest.lifeVar = 0.2f;
-
-        particleTest.duration = 1.5;
-        particleTest.startSize = 3.0f;
-
-        [self addChild:particleTest z:1000 tag:1000000];
+//        CCParticleSystem *particleTest = [CCParticleSun node];
+//        particleTest.life = 2;
+//        particleTest.lifeVar = 0.2f;
+//
+//        particleTest.duration = 1.5;
+//        particleTest.startSize = 3.0f;
+//
+//        [self addChild:particleTest z:1000 tag:1000000];
 
         self.isTouchEnabled = YES;
         [CCDirector sharedDirector].openGLView.multipleTouchEnabled = true;
@@ -251,7 +251,7 @@ enum CCNodeTag {
                 CCMoveTo *move = [CCMoveTo actionWithDuration:time position:starPoint];
                 CCRotateBy *roation = [CCRotateBy actionWithDuration:time angle:20];
                 CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:time];
-                CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
+                CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
                 
                 CCSpawn *spawn = [CCSpawn actions:roation, scale, fadeOut, move, nil];
                 
@@ -493,6 +493,13 @@ enum CCNodeTag {
             [sprites addChild:label];
             
             star = sprites;
+            
+            CCFadeOut *fadeIn = [CCFadeOut actionWithDuration:1];
+            [star runAction:fadeIn];
+            for (CCSprite *sprite in star.children) {
+                [sprite runAction:fadeIn];
+            }
+            
         }else{
             
             [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"star_ani.plist"];
@@ -509,6 +516,9 @@ enum CCNodeTag {
             CCAnimate *animate = [CCAnimate actionWithAnimation:animation];
             animate = [CCRepeatForever actionWithAction:animate];
             [star runAction:animate];
+            
+            CCFadeIn *fadeIn = [CCFadeIn actionWithDuration:0.5];
+            [star runAction:fadeIn];
             
         }
         
