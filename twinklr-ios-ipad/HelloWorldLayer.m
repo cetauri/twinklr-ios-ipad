@@ -24,7 +24,7 @@ enum CCNodeTag {
 #import "HelloWorldLayer.h"
 #import "SpaceLayer.h"
 #import "DataManager.h"
-
+#import "FontManager.h"
 // HelloWorldLayer implementation
 @implementation HelloWorldLayer
 
@@ -50,12 +50,10 @@ enum CCNodeTag {
 		// ask director the the window size
 		CGSize size = [[CCDirector sharedDirector] winSize];
 
-        _depth = 1;
+        _depth = 0;
         [self drawSpaces:_depth];
         
-
         CCParticleSystem *particleTest = [CCParticleSun node];
-        //    particleTest.texture = [[CCTextureCache sharedTextureCache] addImage: @"stars-grayscale.png"];
         particleTest.life = 2;
         particleTest.lifeVar = 0.2f;
 
@@ -461,15 +459,17 @@ enum CCNodeTag {
             
             CCSprite *shadow = [CCSprite spriteWithFile:@"tag_shadow.png"];
             [sprites addChild:shadow];
-        
-            CCLabelTTF *label = [CCLabelTTF labelWithString:[dic objectForKey:@"tag_name"] fontName:@"Marker Felt" fontSize:40];
-            label.position = CGPointMake(sprites.position.x, sprites.position.y+100);
+
+            NSString *fontName = @"BlairMdITC TT-Medium";
+            BOOL isFont = [[FontManager sharedManager]loadFont:fontName];
+            if (!isFont) {
+                fontName = @"Marker Felt";
+            }
+            CCLabelTTF *label = [CCLabelTTF labelWithString:[dic objectForKey:@"tag_name"] fontName:fontName fontSize:30];
+            label.position = CGPointMake(sprites.position.x, sprites.position.y - 80);
             [sprites addChild:label];
             
             star = sprites;
-//        "is_tag": "N",
-//        "tag_name": "",
-//        "image_name": ""
         }else{
             
             [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"star_ani.plist"];
