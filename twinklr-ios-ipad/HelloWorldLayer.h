@@ -14,12 +14,9 @@
 @interface HelloWorldLayer : CCLayer<CCStandardTouchDelegate, UITableViewDataSource, UITableViewDelegate>
 {
     double _initialDistance;
+    double _lastDistance;
 
     int _depth;
-    
-    int selectedWidth;
-    //    NSMutableArray *starPosArray;
-//    NSMutableDictionary *_historyPosDictionary;
     
     BOOL _isStarClicked;
     float _touchDistance;
