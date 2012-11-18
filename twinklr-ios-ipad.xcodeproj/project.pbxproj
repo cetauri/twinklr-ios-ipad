@@ -141,6 +141,7 @@
 		AFC3C68216578AC8004FCF18 /* star_ani.plist in Resources */ = {isa = PBXBuildFile; fileRef = AFC3C68016578AC8004FCF18 /* star_ani.plist */; };
 		AFC3C68316578AC8004FCF18 /* star_ani.png in Resources */ = {isa = PBXBuildFile; fileRef = AFC3C68116578AC8004FCF18 /* star_ani.png */; };
 		AFD18DCA164FD7E900FB0BB9 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AFD18DC8164FD7E900FB0BB9 /* libTestFlight.a */; };
+		AFD9F2231658FB0900BC2DA6 /* BlairMdITC TT-Medium.tiff in Resources */ = {isa = PBXBuildFile; fileRef = AFD9F2221658FB0900BC2DA6 /* BlairMdITC TT-Medium.tiff */; };
 		AFF1F60B1658BF53002D737F /* launch_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = AFF1F6031658BF52002D737F /* launch_icon.png */; };
 		AFF1F60C1658BF53002D737F /* launch_icon@x2.png in Resources */ = {isa = PBXBuildFile; fileRef = AFF1F6041658BF53002D737F /* launch_icon@x2.png */; };
 		AFF1F60D1658BF53002D737F /* universe_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = AFF1F6051658BF53002D737F /* universe_bg.png */; };
@@ -424,6 +425,7 @@
 		AFC3C68116578AC8004FCF18 /* star_ani.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = star_ani.png; path = Resources/animation/star_ani.png; sourceTree = "<group>"; };
 		AFD18DC8164FD7E900FB0BB9 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = libs/TestFlightSDK1.1/libTestFlight.a; sourceTree = "<group>"; };
 		AFD18DC9164FD7E900FB0BB9 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestFlight.h; path = libs/TestFlightSDK1.1/TestFlight.h; sourceTree = "<group>"; };
+		AFD9F2221658FB0900BC2DA6 /* BlairMdITC TT-Medium.tiff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = image.tiff; name = "BlairMdITC TT-Medium.tiff"; path = "Resources/font/BlairMdITC TT-Medium.tiff"; sourceTree = "<group>"; };
 		AFF1F6031658BF52002D737F /* launch_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = launch_icon.png; path = Resources/launch_icon.png; sourceTree = "<group>"; };
 		AFF1F6041658BF53002D737F /* launch_icon@x2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "launch_icon@x2.png"; path = "Resources/launch_icon@x2.png"; sourceTree = "<group>"; };
 		AFF1F6051658BF53002D737F /* universe_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = universe_bg.png; path = Resources/universe_bg.png; sourceTree = "<group>"; };
@@ -568,6 +570,7 @@
 		AFA59AA4164B5F2400DA196F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				AFD9F2201658F98400BC2DA6 /* font */,
 				AFF1F6031658BF52002D737F /* launch_icon.png */,
 				AFF1F6041658BF53002D737F /* launch_icon@x2.png */,
 				AFF1F6051658BF53002D737F /* universe_bg.png */,
@@ -924,6 +927,14 @@
 			name = TestFlightSDK1.1;
 			sourceTree = "<group>";
 		};
+		AFD9F2201658F98400BC2DA6 /* font */ = {
+			isa = PBXGroup;
+			children = (
+				AFD9F2221658FB0900BC2DA6 /* BlairMdITC TT-Medium.tiff */,
+			);
+			name = font;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1011,11 +1022,15 @@
 				AFF1F61A1658BF89002D737F /* Default-Portrait@2x~ipad.png in Resources */,
 				AFF1F61B1658BF9B002D737F /* Default-Landscape~ipad.png in Resources */,
 				AFF1F61C1658BFA3002D737F /* Default-Landscape@2x~ipad.png in Resources */,
+<<<<<<< HEAD
 				C8D475F816590C860070D8AC /* 554.jpg in Resources */,
 				C8D475F916590C860070D8AC /* 852.jpg in Resources */,
 				C8D475FA16590C860070D8AC /* 928.jpg in Resources */,
 				C8D475FB16590C860070D8AC /* 1295.jpg in Resources */,
 				C8D475FC16590C860070D8AC /* 1296.jpg in Resources */,
+=======
+				AFD9F2231658FB0900BC2DA6 /* BlairMdITC TT-Medium.tiff in Resources */,
+>>>>>>> b9dbc7a550070fd0ea9c88d4326a2799404737e1
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
