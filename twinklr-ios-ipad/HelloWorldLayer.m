@@ -92,7 +92,6 @@ enum CCNodeTag {
 	
 	// don't forget to call "super dealloc"
 	[super dealloc];
-//    [_historyPosDictionary release];
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -451,28 +450,50 @@ enum CCNodeTag {
         
         CGPoint starPoint = CGPointMake([[dic objectForKey:@"star_x"]floatValue], [[dic objectForKey:@"star_y"]floatValue]);
         
-//        NSLog(@"starPoint !!!! %@", NSStringFromCGPoint(starPoint));
         starPoint = [self pointResacle:starPoint];
-//        NSLog(@"starPoint ---- %@", NSStringFromCGPoint(starPoint));
-        [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"star_ani.plist"];
-        NSMutableArray *frames = [NSMutableArray array];
-        for (int i = 1; i < 9; i++) {
-            NSString *frameName = [NSString stringWithFormat:@"star_0%i.png",i];
-            CCSpriteFrame *frame = [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:frameName];
-            [frames addObject:frame];
+        
+        CCSprite *star = nil;
+        if ([[dic objectForKey:@"is_tag"]isEqualToString:@"Y"]) {
+            CCSprite *sprites = [CCSprite node];
+            
+            CCSprite *starShadow = [CCSprite spriteWithFile:[dic objectForKey:@"image_name"]];
+            [sprites addChild:starShadow];
+            
+            CCSprite *shadow = [CCSprite spriteWithFile:@"tag_shadow.png"];
+            [sprites addChild:shadow];
+        
+            CCLabelTTF *label = [CCLabelTTF labelWithString:[dic objectForKey:@"tag_name"] fontName:@"Marker Felt" fontSize:40];
+            label.position = CGPointMake(sprites.position.x, sprites.position.y+100);
+            [sprites addChild:label];
+            
+            star = sprites;
+//        "is_tag": "N",
+//        "tag_name": "",
+//        "image_name": ""
+        }else{
+            
+            [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"star_ani.plist"];
+            NSMutableArray *frames = [NSMutableArray array];
+            for (int i = 1; i < 9; i++) {
+                NSString *frameName = [NSString stringWithFormat:@"star_0%i.png",i];
+                CCSpriteFrame *frame = [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:frameName];
+                [frames addObject:frame];
+            }
+            
+            star = [CCSprite spriteWithSpriteFrame:[frames objectAtIndex:0]];
+            
+            CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:0.1f];
+            CCAnimate *animate = [CCAnimate actionWithAnimation:animation];
+            animate = [CCRepeatForever actionWithAction:animate];
+            [star runAction:animate];
+            
         }
         
-        CCSprite *star = [CCSprite spriteWithSpriteFrame:[frames objectAtIndex:0]];
+        star.scale = 0.5;
         [star setPosition:starPoint];
         star.tag = _depth * 100 + i;
-        star.scale = 0.5;
         [self addChild:star z:star.tag];
 
-        CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:0.1f];
-        CCAnimate *animate = [CCAnimate actionWithAnimation:animation];
-        animate = [CCRepeatForever actionWithAction:animate];
-        [star runAction:animate];
-        
 //        [self schedule:@selector(update:)interval:];
     }
     
