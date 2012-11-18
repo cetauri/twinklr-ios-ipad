@@ -112,7 +112,14 @@ enum CCNodeTag {
             NSArray *starPosArray = [[DataManager sharedInstance] starsInZ:_depth];
             for (int i = 0; i < starPosArray.count; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
-                if (CGRectContainsPoint(star.boundingBox, convertedTouch)){
+                CGRect boundRect = star.boundingBox;
+                
+                if(CGSizeEqualToSize(CGSizeZero, boundRect.size)){
+                    boundRect.size = CGSizeMake(54, 54);
+                    boundRect.origin = CGPointMake(boundRect.origin.x - 54/2, boundRect.origin.y - 54/2);
+                }
+
+                if (CGRectContainsPoint(boundRect, convertedTouch)){
                     [self shiftX:-250];
                     break;
                 }
