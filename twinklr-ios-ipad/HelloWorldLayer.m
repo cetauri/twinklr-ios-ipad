@@ -120,6 +120,7 @@ enum CCNodeTag {
                 }
 
                 if (CGRectContainsPoint(boundRect, convertedTouch)){
+                    startID = [[starPosArray objectAtIndex:i] objectForKey:@"star_id"];
                     [self shiftX:-250];
                     break;
                 }
@@ -588,7 +589,10 @@ enum CCNodeTag {
 
 #pragma mark - UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 769;
+    if ([startID isEqualToString:@"0"]) {
+        return 768;
+    }
+    return 1835;
 }
 
 #pragma mark - UITableViewDataSource
@@ -599,8 +603,12 @@ enum CCNodeTag {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"aaa"];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"tagline.png"]];
-    cell.backgroundColor = [UIColor grayColor];
+    if ([startID isEqualToString:@"0"]) {
+        cell.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"tagline.png"]];
+    }else{
+        cell.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"aside_tag4.png"]];
+    }
+
     return cell;
 }
 

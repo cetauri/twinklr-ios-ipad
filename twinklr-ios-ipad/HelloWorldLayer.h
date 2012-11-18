@@ -20,6 +20,8 @@
     
     BOOL _isStarClicked;
     float _touchDistance;
+    
+    NSString *startID;
 }
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
