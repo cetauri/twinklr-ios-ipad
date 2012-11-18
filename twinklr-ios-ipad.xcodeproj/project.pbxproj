@@ -1022,15 +1022,12 @@
 				AFF1F61A1658BF89002D737F /* Default-Portrait@2x~ipad.png in Resources */,
 				AFF1F61B1658BF9B002D737F /* Default-Landscape~ipad.png in Resources */,
 				AFF1F61C1658BFA3002D737F /* Default-Landscape@2x~ipad.png in Resources */,
-<<<<<<< HEAD
 				C8D475F816590C860070D8AC /* 554.jpg in Resources */,
 				C8D475F916590C860070D8AC /* 852.jpg in Resources */,
 				C8D475FA16590C860070D8AC /* 928.jpg in Resources */,
 				C8D475FB16590C860070D8AC /* 1295.jpg in Resources */,
 				C8D475FC16590C860070D8AC /* 1296.jpg in Resources */,
-=======
 				AFD9F2231658FB0900BC2DA6 /* BlairMdITC TT-Medium.tiff in Resources */,
->>>>>>> b9dbc7a550070fd0ea9c88d4326a2799404737e1
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
