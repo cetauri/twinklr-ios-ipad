@@ -209,12 +209,12 @@ enum CCNodeTag {
                 star.position = starPoint;
                 
                 CCMoveTo *move = [CCMoveTo actionWithDuration:0.2 position:starPoint];
-                CCRotateBy *roation = [CCRotateBy actionWithDuration:0.2 angle:20];
+                CCRotateBy *roation = nil;//[CCRotateBy actionWithDuration:0.2 angle:20];
                 CCFadeIn *fadeIn = [CCFadeIn actionWithDuration:0.2];
                 CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
 //                [star runAction:[CCSpawn actions:roation, scale, fadeIn, move, nil]];
 
-                CCSpawn *spawn = [CCSpawn actions:roation, scale, fadeIn, move, nil];
+                CCSpawn *spawn = [CCSpawn actions:scale, fadeIn, move, roation, nil];
                 
                 id callback = [CCCallFuncN actionWithTarget:self selector:@selector(afterOut:)];
                 [star runAction:[CCSequence actions:spawn, callback, nil]];
@@ -250,7 +250,7 @@ enum CCNodeTag {
                 
                 ccTime time = 0.5;
                 CCMoveTo *move = [CCMoveTo actionWithDuration:time position:starPoint];
-                CCRotateBy *roation = [CCRotateBy actionWithDuration:time angle:20];
+                CCRotateBy *roation = [CCRotateBy actionWithDuration:time angle:180];
                 CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:time];
                 CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:time];
                 
@@ -405,13 +405,17 @@ enum CCNodeTag {
         } else {
             star.opacity = 255;
         }
-        
 //        CCMoveTo *move = [CCMoveTo actionWithDuration:0.0001 position:starPoint];
-        CCRotateBy *roation = [CCRotateBy actionWithDuration:0.1 angle:20];
+        CCRotateBy *roation = [CCRotateBy actionWithDuration:1 angle:distance/4];
+        
+        if ([[starInfo objectForKey:@"is_tag"]isEqualToString:@"Y"]) {
+            roation = nil;
+        }
+        
 //        CCFadeOut *fadeOut = [CCFadeOut actionWithDuration:1];
         CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
 //        NSLog(@"star.opacity : %i", star.opacity);
-        [star runAction:[CCSpawn actions:roation, scale, nil]];
+        [star runAction:[CCSpawn actions:scale, roation, nil]];
     }
     
     //NEXT
