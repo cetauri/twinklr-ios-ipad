@@ -544,9 +544,9 @@ enum CCNodeTag {
             star = [CCSprite spriteWithFile:@"star.png"];
             star.scale = 0.5;
         }
-        
+
         star.tag = (_depth + 1) * 100 + i + CCNodeTag_BACK_STAR;
-        star.position = CGPointMake(star.position.x/2 + 1024/4, star.position.y/2 + 768/4);
+        star.position = CGPointMake(starPoint.x/2 + 1024/4, starPoint.y/2 + 768/4);
         [self addChild:star z:star.tag];
     }
     
