@@ -6,9 +6,9 @@
 //  Copyright __MyCompanyName__ 2012년. All rights reserved.
 //
 
-#define MOVE_Penalty 2
+#define MOVE_Penalty 20
 #define MAX_TRANSITION_DISTANCE 150
-#define MIN_TRANSITION_DISTANCE 80
+#define MIN_TRANSITION_DISTANCE -50
 #define Opacity_DISTANCE 300
 enum CCNodeTag {
     CCNodeTag_status = 10,
@@ -81,19 +81,8 @@ enum CCNodeTag {
 	return self;
 }
 
-// on "dealloc" you need to release all your retained objects
-- (void) dealloc
-{
-	// in case you have something to dealloc, do it in this method
-	// in this particular example nothing needs to be released.
-	// cocos2d will automatically release all the children (Label)
-	
-	// don't forget to call "super dealloc"
-	[super dealloc];
-}
-
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
     
     if ([touches count] == 1) {
 		UITouch *touch = [touches anyObject];
@@ -140,7 +129,7 @@ enum CCNodeTag {
 }
 
 - (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
+//    NSLog(@"%@ - %i", NSStringFromSelector(_cmd), [touches count]);
     
 	if ([touches count] == 1) {
 		// drag methods
@@ -228,25 +217,15 @@ enum CCNodeTag {
             _depth--;
             [self drawSpaces:_depth];
             
-        } else if (distance > MAX_TRANSITION_DISTANCE ) {
+        } else if (distance >= MAX_TRANSITION_DISTANCE ) {
             
             for (int i = 0; i < starPosArray.count; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
                 CGPoint starPoint = star.position;
-                float distance = 1000;
-                if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
-                    starPoint.x += distance/10;
-                    starPoint.y += distance/10;
-                } else if (starPoint.x > size.width/2 && starPoint.y < size.height/2) {
-                    starPoint.x += distance/10;
-                    starPoint.y -= distance/10;
-                } else if (starPoint.x < size.width/2 && starPoint.y > size.height/2) {
-                    starPoint.x -= distance/10;
-                    starPoint.y += distance/10;
-                } else if (starPoint.x < size.width/2 && starPoint.y < size.height/2) {
-                    starPoint.x -= distance/10;
-                    starPoint.y -= distance/10;
-                }
+                float distance = 1280;
+                
+                starPoint.x = (starPoint.x - size.width/2) * (1+distance/250 ) + size.width/2;
+                starPoint.y = (starPoint.y - size.height/2)* (1+distance/250 ) + size.height/2;
                 
                 ccTime time = 0.5;
                 CCMoveTo *move = [CCMoveTo actionWithDuration:time position:starPoint];
@@ -271,19 +250,29 @@ enum CCNodeTag {
         } else {
             for (int i = 0; i < starPosArray.count; i++) {
                 CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
-                
+                star.opacity = 255;
                 NSDictionary *starInfo = [starPosArray objectAtIndex:i];
                 CGPoint starPoint = CGPointMake([[starInfo objectForKey:@"star_x"]floatValue], [[starInfo objectForKey:@"star_y"]floatValue]);
                 starPoint = [self pointResacle:starPoint];
-                star.position = starPoint;
                 
-                CCMoveTo *move = [CCMoveTo actionWithDuration:0.5 position:starPoint];
-//                CCRotateBy *roation = [CCRotateBy actionWithDuration:0.2 angle:20];
-//                CCFadeIn *fadeIn = [CCFadeIn actionWithDuration:0.2];
-//                CCEaseExponentialIn  *scale = [CCEaseExponentialIn actionWithDuration:0.1];
+                CCMoveTo *move = [CCMoveTo actionWithDuration:0.2 position:starPoint];
                 [star runAction:move];
-                
             }
+            
+            starPosArray = [[DataManager sharedInstance] starsInZ:_depth+1];
+            for (int i = 0; i < starPosArray.count; i++) {
+                NSDictionary *starInfo = [starPosArray objectAtIndex:i];
+                CGPoint starPoint = CGPointMake([[starInfo objectForKey:@"star_x"]floatValue], [[starInfo objectForKey:@"star_y"]floatValue]);
+                starPoint = [self pointResacle:starPoint];
+                
+                CCSprite *star =  (CCSprite *)[self getChildByTag:_depth+1 * 100 + i];
+                star.opacity = 255;
+                starPoint = CGPointMake(starPoint.x/2 + 1024/4, starPoint.y/2 + 768/4);
+                
+                CCMoveTo *move = [CCMoveTo actionWithDuration:0.2 position:starPoint];
+                [star runAction:move];
+            }
+            
 #ifdef DEBUG
             [statusLabel setString:@" "];
 #endif
@@ -374,6 +363,9 @@ enum CCNodeTag {
     CGSize size = [[CCDirector sharedDirector] winSize];
     _lastDistance = distance;
     
+    CCLabelTTF *distLabel =  (CCLabelTTF *)[self getChildByTag:CCNodeTag_distance];
+    [distLabel setString:[NSString stringWithFormat:@"%f", distance]];
+    
     NSArray *starPosArray = [[DataManager sharedInstance] starsInZ:_depth];
     for (int i = 0; i < starPosArray.count; i++) {
         CCSprite *star =  (CCSprite *)[self getChildByTag:_depth * 100 + i];
@@ -382,19 +374,10 @@ enum CCNodeTag {
         NSDictionary *starInfo = [starPosArray objectAtIndex:i];
         CGPoint starPoint = CGPointMake([[starInfo objectForKey:@"star_x"]floatValue], [[starInfo objectForKey:@"star_y"]floatValue]);
         starPoint = [self pointResacle:starPoint];
-        if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
-            starPoint.x += distance / MOVE_Penalty;
-            starPoint.y += distance / MOVE_Penalty;
-        } else if (starPoint.x > size.width/2 && starPoint.y < size.height/2) {
-            starPoint.x += distance / MOVE_Penalty;
-            starPoint.y -= distance / MOVE_Penalty;
-        } else if (starPoint.x < size.width/2 && starPoint.y > size.height/2) {
-            starPoint.x -= distance / MOVE_Penalty;
-            starPoint.y += distance / MOVE_Penalty;
-        } else if (starPoint.x < size.width/2 && starPoint.y < size.height/2) {
-            starPoint.x -= distance / MOVE_Penalty;
-            starPoint.y -= distance / MOVE_Penalty;
-        }
+        
+        starPoint.x = (starPoint.x - size.width/2) * (1+distance/250 ) + size.width/2;
+        starPoint.y = (starPoint.y - size.height/2)* (1+distance/250 ) + size.height/2;
+       
         star.position = starPoint;
         
         int radius = ccpDistance(star.position, CGPointMake(size.width/2, size.height/2));
@@ -425,28 +408,13 @@ enum CCNodeTag {
         CCSprite *star =  (CCSprite *)[self getChildByTag:level * 100 + i + CCNodeTag_BACK_STAR];
         if (star == nil) break;
         
-        int scaleSize = 8;
-//        NSMutableArray *starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", level]];
-
-//        CGPoint starPoint = [[starPosArray objectAtIndex:i] CGPointValue];
         NSDictionary *starInfo = [starPosArray objectAtIndex:i];
         CGPoint starPoint = CGPointMake([[starInfo objectForKey:@"star_x"]floatValue], [[starInfo objectForKey:@"star_y"]floatValue]);
         starPoint = [self pointResacle:starPoint];
         starPoint = CGPointMake(starPoint.x/2 + 1024/4, starPoint.y/2 + 768/4);
-
-        if (starPoint.x > size.width/2 && starPoint.y > size.height/2) {
-            starPoint.x += distance / MOVE_Penalty /scaleSize;
-            starPoint.y += distance / MOVE_Penalty /scaleSize;
-        } else if (starPoint.x > size.width/2 && starPoint.y < size.height/2) {
-            starPoint.x += distance / MOVE_Penalty /scaleSize;
-            starPoint.y -= distance / MOVE_Penalty /scaleSize;
-        } else if (starPoint.x < size.width/2 && starPoint.y > size.height/2) {
-            starPoint.x -= distance / MOVE_Penalty /scaleSize;
-            starPoint.y += distance / MOVE_Penalty /scaleSize;
-        } else if (starPoint.x < size.width/2 && starPoint.y < size.height/2) {
-            starPoint.x -= distance / MOVE_Penalty /scaleSize;
-            starPoint.y -= distance / MOVE_Penalty /scaleSize;
-        }
+        
+        starPoint.x = (starPoint.x - size.width/2) * (1+distance/250 ) + size.width/2;
+        starPoint.y = (starPoint.y - size.height/2)* (1+distance/250 ) + size.height/2;
         
         //TODO 튜닝하자!!!
 //        star.scale = distance/1000;
@@ -558,36 +526,6 @@ enum CCNodeTag {
         star.position = CGPointMake(starPoint.x/2 + 1024/4, starPoint.y/2 + 768/4);
         [self addChild:star z:star.tag];
     }
-    
-    
-//    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth - 1]];
-//    for (int i = 0; i < starPosArray.count; i++) {
-//        CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
-//        if(star == nil)
-//            [self addChild:star z:star.tag];
-//    }
-//    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth - 1 + CCNodeTag_BACK_STAR]];
-//    for (int i = 0; i < starPosArray.count; i++) {
-//        CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
-//        if(star == nil)
-//            [self addChild:star z:star.tag];
-//    }
-    
-    
-//    
-//    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth + 1]];
-//    for (int i = 0; i < starPosArray.count; i++) {
-//        CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
-//        if(star == nil)
-//            [self addChild:star z:star.tag];
-//    }
-//    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth + 1 + CCNodeTag_BACK_STAR]];
-//    for (int i = 0; i < starPosArray.count; i++) {
-//        CCSprite *star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
-//        if(star == nil)
-//            [self addChild:star z:star.tag];
-//    }
-    
 }
 
 - (CGPoint)pointResacle:(CGPoint)point{
