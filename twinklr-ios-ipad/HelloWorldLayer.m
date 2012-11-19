@@ -475,31 +475,29 @@ enum CCNodeTag {
         
         CCSprite *star = nil;
         if ([[dic objectForKey:@"is_tag"]isEqualToString:@"Y"]) {
-            CCSprite *sprites = [CCSprite node];
-            
-            CCSprite *starShadow = [CCSprite spriteWithFile:[dic objectForKey:@"image_name"]];
-            [sprites addChild:starShadow];
-            
-            CCSprite *shadow = [CCSprite spriteWithFile:@"tag_shadow.png"];
-            [sprites addChild:shadow];
+            star = [CCSprite spriteWithFile:[dic objectForKey:@"image_name"]];
 
             NSString *fontName = @"BlairMdITC TT-Medium";
             BOOL isFont = [[FontManager sharedManager]loadFont:fontName];
             if (!isFont) {
                 fontName = @"Marker Felt";
             }
-            CCLabelTTF *label = [CCLabelTTF labelWithString:[dic objectForKey:@"tag_name"] fontName:fontName fontSize:30];
-            label.position = CGPointMake(sprites.position.x, sprites.position.y - 80);
-            [sprites addChild:label];
             
-            star = sprites;
+            UILabel *slabel = [[UILabel alloc]initWithFrame:CGRectZero];
+            slabel.text = [dic objectForKey:@"tag_name"];
+            slabel.font = [UIFont fontWithName:fontName size:30];
+            [slabel sizeToFit];
+            NSLog(@"slabel.frame.size : %@", NSStringFromCGSize(slabel.frame.size));
             
-            CCFadeOut *fadeIn = [CCFadeOut actionWithDuration:1];
-            [star runAction:fadeIn];
-            for (CCSprite *sprite in star.children) {
-                [sprite runAction:fadeIn];
-            }
+            CCLabelTTF *label = [CCLabelTTF labelWithString:[dic objectForKey:@"tag_name"]
+                                                 dimensions:slabel.frame.size
+                                                  alignment:CCTextAlignmentCenter
+                                                   fontName:fontName fontSize:30];
+            label.anchorPoint = CGPointMake(0, 1);
+            label.position = CGPointMake(star.position.x, star.position.y);
+            [star addChild:label];
             
+            star.scale = 0.7;
         }else{
             
             [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"star_ani.plist"];
@@ -520,10 +518,10 @@ enum CCNodeTag {
             CCFadeIn *fadeIn = [CCFadeIn actionWithDuration:0.5];
             [star runAction:fadeIn];
             
+            star.scale = 0.5;
         }
         
-        star.scale = 0.5;
-        [star setPosition:starPoint];
+        star.position = starPoint;
         star.tag = _depth * 100 + i;
         [self addChild:star z:star.tag];
 
@@ -539,37 +537,18 @@ enum CCNodeTag {
         starPoint = [self pointResacle:starPoint];
         
         CCSprite *star = nil;
-        if ([[starInfo objectForKey:@"is_tag"]isEqualToString:@"Y"]) {
-            CCSprite *sprites = [CCSprite node];
-            
-            CCSprite *starShadow = [CCSprite spriteWithFile:[starInfo objectForKey:@"image_name"]];
-            [sprites addChild:starShadow];
-            
-            CCSprite *shadow = [CCSprite spriteWithFile:@"tag_shadow.png"];
-            [sprites addChild:shadow];
-            
-            NSString *fontName = @"BlairMdITC TT-Medium";
-            BOOL isFont = [[FontManager sharedManager]loadFont:fontName];
-            if (!isFont) {
-                fontName = @"Marker Felt";
-            }
-            CCLabelTTF *label = [CCLabelTTF labelWithString:[starInfo objectForKey:@"tag_name"] fontName:fontName fontSize:30];
-            label.position = CGPointMake(sprites.position.x, sprites.position.y - 80);
-            [sprites addChild:label];
-            
-            star = sprites;
-            
+        if ([[starInfo objectForKey:@"is_tag"]isEqualToString:@"Y"]) {            
+            star = [CCSprite spriteWithFile:[starInfo objectForKey:@"image_name"]];
+            star.scale = 0.3;
         } else {
             star = [CCSprite spriteWithFile:@"star.png"];
+            star.scale = 0.5;
         }
         
-        [star setPosition:starPoint];
         star.tag = (_depth + 1) * 100 + i + CCNodeTag_BACK_STAR;
-        star.scale = 0.5;
         star.position = CGPointMake(star.position.x/2 + 1024/4, star.position.y/2 + 768/4);
         [self addChild:star z:star.tag];
     }
-    
     
     
 //    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth - 1]];
@@ -610,7 +589,7 @@ enum CCNodeTag {
 #pragma mark - UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if ([startID isEqualToString:@"0"]) {
-        return 768;
+        return 1938;
     }
     return 1835;
 }
@@ -626,7 +605,8 @@ enum CCNodeTag {
     if ([startID isEqualToString:@"0"]) {
         cell.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"tagline.png"]];
     }else{
-        cell.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"aside_tag4.png"]];
+        NSLog(@"startID : %@", [NSString stringWithFormat:@"t%@.png", startID]);
+        cell.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"t%@.png", startID]]];
     }
 
     return cell;
