@@ -222,8 +222,9 @@ enum CCNodeTag {
                 star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
                 [self removeChild:star cleanup:YES];
             }
-            
+#ifdef DEBUG           
             [statusLabel setString:@"Zoom out"];
+#endif
             _depth--;
             [self drawSpaces:_depth];
             
@@ -261,8 +262,10 @@ enum CCNodeTag {
                 star =  (CCSprite *)[self getChildByTag:(_depth+1) * 100 + i + CCNodeTag_BACK_STAR];
                 [self removeChild:star cleanup:YES];
             }
-            
+#ifdef DEBUG        
             [statusLabel setString:@"Zoom in"];
+#endif
+
             _depth++;
             [self drawSpaces:_depth];
         } else {
@@ -281,13 +284,15 @@ enum CCNodeTag {
                 [star runAction:move];
                 
             }
+#ifdef DEBUG
             [statusLabel setString:@" "];
+#endif
         }
    
-//#ifdef DEBUG
+#ifdef DEBUG
         [countLabel setString:[NSString stringWithFormat:@"%i _depth", _depth]];
         [distLabel setString:[NSString stringWithFormat:@"%f", distance]];
-//#endif
+#endif
         
     }
     _initialDistance = _lastDistance = 0;
