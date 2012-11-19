@@ -96,8 +96,8 @@
     "3": [
           {
           "star_id": "1630",
-          "star_x": "32",
-          "star_y": "20",
+          "star_x": "52",
+          "star_y": "40",
           "star_z": 3,
           "is_tag": "Y",
           "tag_name": "2NE1",
@@ -235,8 +235,8 @@
     "5": [
           {
           "star_id": "1629",
-          "star_x": "32",
-          "star_y": "180",
+          "star_x": "52",
+          "star_y": "160",
           "star_z": 5,
           "is_tag": "Y",
           "tag_name": "소녀시대(Girl's Generation)",
@@ -437,8 +437,8 @@
     "7": [
           {
           "star_id": "759",
-          "star_x": "288",
-          "star_y": "20",
+          "star_x": "268",
+          "star_y": "40",
           "star_z": 7,
           "is_tag": "Y",
           "tag_name": "슈퍼주니어(Super Junior)",
@@ -648,8 +648,8 @@
     "9": [
           {
           "star_id": "632",
-          "star_x": "288",
-          "star_y": "180",
+          "star_x": "268",
+          "star_y": "160",
           "star_z": 9,
           "is_tag": "Y",
           "tag_name": "BIGBANG",
