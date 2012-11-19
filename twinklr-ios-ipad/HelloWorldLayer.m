@@ -538,28 +538,38 @@ enum CCNodeTag {
         CGPoint starPoint = CGPointMake([[starInfo objectForKey:@"star_x"]floatValue], [[starInfo objectForKey:@"star_y"]floatValue]);
         starPoint = [self pointResacle:starPoint];
         
-//        [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"star_ani.plist"];
-//        NSMutableArray *frames = [NSMutableArray array];
-//        for (int i = 1; i < 9; i++) {
-//            NSString *frameName = [NSString stringWithFormat:@"star_0%i.png",i];
-//            CCSpriteFrame *frame = [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:frameName];
-//            [frames addObject:frame];
-//        }
-//        
-        CCSprite *star = [CCSprite spriteWithFile:@"star.png"];
+        CCSprite *star = nil;
+        if ([[starInfo objectForKey:@"is_tag"]isEqualToString:@"Y"]) {
+            CCSprite *sprites = [CCSprite node];
+            
+            CCSprite *starShadow = [CCSprite spriteWithFile:[starInfo objectForKey:@"image_name"]];
+            [sprites addChild:starShadow];
+            
+            CCSprite *shadow = [CCSprite spriteWithFile:@"tag_shadow.png"];
+            [sprites addChild:shadow];
+            
+            NSString *fontName = @"BlairMdITC TT-Medium";
+            BOOL isFont = [[FontManager sharedManager]loadFont:fontName];
+            if (!isFont) {
+                fontName = @"Marker Felt";
+            }
+            CCLabelTTF *label = [CCLabelTTF labelWithString:[starInfo objectForKey:@"tag_name"] fontName:fontName fontSize:30];
+            label.position = CGPointMake(sprites.position.x, sprites.position.y - 80);
+            [sprites addChild:label];
+            
+            star = sprites;
+            
+        } else {
+            star = [CCSprite spriteWithFile:@"star.png"];
+        }
+        
         [star setPosition:starPoint];
         star.tag = (_depth + 1) * 100 + i + CCNodeTag_BACK_STAR;
         star.scale = 0.5;
         star.position = CGPointMake(star.position.x/2 + 1024/4, star.position.y/2 + 768/4);
         [self addChild:star z:star.tag];
-        
-//        CCAnimation *animation = [CCAnimation animationWithFrames:frames delay:0.1f];
-//        CCAnimate *animate = [CCAnimate actionWithAnimation:animation];
-//        animate = [CCRepeatForever actionWithAction:animate];
-//        [star runAction:animate];
-//        
-//        [self schedule:@selector(update:)interval:￼];
     }
+    
     
     
 //    starPosArray = [_historyPosDictionary objectForKey:[NSString stringWithFormat:@"%i", _depth - 1]];
