@@ -1,15 +1,6 @@
 {
     "1": [
           {
-          "star_id": "554",
-          "star_x": "120",
-          "star_y": "90",
-          "star_z": 1,
-          "is_tag": "Y",
-          "tag_name": "PSY",
-          "image_name": "554.png"
-          },
-          {
           "star_id": "0",
           "star_x": "224",
           "star_y": "97",
@@ -38,6 +29,15 @@
           }
           ],
     "2": [
+          {
+          "star_id": "554",
+          "star_x": "120",
+          "star_y": "90",
+          "star_z": 1,
+          "is_tag": "Y",
+          "tag_name": "PSY",
+          "image_name": "554.png"
+          },
           {
           "star_id": "0",
           "star_x": "227",

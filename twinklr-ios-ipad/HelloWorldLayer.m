@@ -8,7 +8,7 @@
 
 #define MOVE_Penalty 20
 #define MAX_TRANSITION_DISTANCE 150
-#define MIN_TRANSITION_DISTANCE -50
+#define MIN_TRANSITION_DISTANCE -80
 #define Opacity_DISTANCE 300
 enum CCNodeTag {
     CCNodeTag_status = 10,
